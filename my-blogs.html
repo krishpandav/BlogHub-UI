@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blogs - BlogHub</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav" id="authNav">
+                    <!-- Auth navigation will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5 d-none">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Success Alert -->
+        <div id="successAlert" class="alert alert-success d-none" role="alert">
+            <span id="successMessage"></span>
+        </div>
+
+        <!-- Blogs Content -->
+        <div id="blogsContent">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-bold">My Blogs</h1>
+                <a href="create-blog.html" class="btn btn-primary-custom">
+                    Create New Blog
+                </a>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search my blogs...">
+                        <button class="btn btn-outline-secondary" id="searchBtn">Search</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Blogs List -->
+            <div id="blogsList">
+                <p class="text-muted">Loading your blogs...</p>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Blogs pagination">
+                <ul class="pagination justify-content-center" id="blogsPagination">
+                    <!-- Pagination will be loaded here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4 border-top">
+        <div class="container">
+            <div class="text-center">
+                <p class="text-muted mb-0">&copy; 2024 BlogHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+    
+    <script>
+        let currentPage = 1;
+        let currentSearch = '';
+        let currentStatus = '';
+        
+        $(document).ready(function() {
+            // Check if user is authenticated
+            if (!Auth.requireAuth()) {
+                return;
+            }
+            
+            // Load blogs
+            loadBlogs();
+            
+            // Bind events
+            bindEvents();
+        });
+        
+        function bindEvents() {
+            // Search
+            $('#searchBtn').on('click', function() {
+                currentSearch = $('#searchInput').val().trim();
+                currentPage = 1;
+                loadBlogs();
+            });
+            
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    $('#searchBtn').click();
+                }
+            });
+            
+            // Status filter
+            $('#statusFilter').on('change', function() {
+                currentStatus = $(this).val();
+                currentPage = 1;
+                loadBlogs();
+            });
+        }
+        
+        function loadBlogs(page = 1) {
+            currentPage = page;
+            showLoading(true);
+            hideAlerts();
+            
+            // Prepare params
+            const params = {
+                page: page,
+                limit: 10
+            };
+            
+            if (currentSearch) {
+                params.search = currentSearch;
+            }
+            
+            if (currentStatus) {
+                params.status = currentStatus;
+            }
+            
+            UserAPI.getMyBlogs(page, 10)
+                .then(response => {
+                    debugger
+                    if (response.success && response.data.blogs) {
+                        renderBlogs(response.data.blogs);
+                        renderPagination(response.data.pagination || {});
+                    } else {
+                        $('#blogsList').html('<p class="text-muted">No blogs found.</p>');
+                    }
+                })
+                .catch(error => {
+                    showError('Error loading blogs: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function renderBlogs(blogs) {
+            if (blogs.length === 0) {
+                $('#blogsList').html('<p class="text-muted">You haven\'t created any blogs yet. <a href="create-blog.html">Create your first blog!</a></p>');
+                return;
+            }
+            
+            let html = '';
+            blogs.forEach(blog => {
+                // Add image HTML if blog has an image
+                const imageHtml = blog.image ? 
+                    `<div class="mb-3">
+                        <img src="${blog.image}" alt="${UTILS.escapeHtml(blog.title)}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    </div>` : '';
+                
+                html += `
+                    <div class="card mb-4 blog-card">
+                        ${imageHtml}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title">
+                                    <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
+                                        ${UTILS.escapeHtml(blog.title)}
+                                    </a>
+                                </h5>
+                                ${blog.category ? `<span class="blog-category">${UTILS.escapeHtml(blog.category.name || blog.category)}</span>` : ''}
+                            </div>
+                            
+                            <p class="card-text text-muted">
+                                ${UTILS.truncateText(blog.excerpt || blog.content || '', 150)}
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge ${blog.status === 'published' ? 'bg-success' : blog.status === 'pending' ? 'bg-warning' : blog.status === 'rejected' ? 'bg-danger' : 'bg-secondary'}">
+                                        ${UTILS.escapeHtml(blog.status)}
+                                    </span>
+                                    <small class="text-muted ms-2">
+                                        ${UTILS.formatDateRelative(blog.created_at)}
+                                    </small>
+                                </div>
+                                
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="editBlog('${blog._id}')">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteBlog('${blog._id}')">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            $('#blogsList').html(html);
+        }
+        
+        function renderPagination(pagination) {
+            const $pagination = $('#blogsPagination');
+            
+            if (!pagination.totalPages || pagination.totalPages <= 1) {
+                $pagination.empty();
+                return;
+            }
+            
+            const currentPage = pagination.currentPage || 1;
+            const totalPages = pagination.totalPages;
+            
+            let html = '';
+            
+            // Previous button
+            html += `
+                <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadBlogs(${currentPage - 1})">Previous</a>
+                </li>
+            `;
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="loadBlogs(1)">1</a></li>`;
+                if (startPage > 2) {
+                    html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadBlogs(${i})">${i}</a>
+                    </li>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="loadBlogs(${totalPages})">${totalPages}</a></li>`;
+            }
+            
+            // Next button
+            html += `
+                <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadBlogs(${currentPage + 1})">Next</a>
+                </li>
+            `;
+            
+            $pagination.html(html);
+        }
+        
+        function editBlog(blogId) {
+            window.location.href = `edit-blog.html?id=${blogId}`;
+        }
+        
+        function deleteBlog(blogId) {
+            if (!confirm('Are you sure you want to delete this blog? This cannot be undone.')) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            BlogAPI.deleteBlog(blogId)
+                .then(response => {
+                    if (response.success) {
+                        showSuccess('Blog deleted successfully');
+                        loadBlogs(currentPage);
+                    } else {
+                        showError('Error deleting blog: ' + response.message);
+                    }
+                })
+                .catch(error => {
+                    showError('Error deleting blog: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function showLoading(show) {
+            if (show) {
+                $('#loadingSpinner').removeClass('d-none');
+                $('#blogsList').addClass('d-none');
+            } else {
+                $('#loadingSpinner').addClass('d-none');
+                $('#blogsList').removeClass('d-none');
+            }
+        }
+        
+        function showError(message) {
+            $('#errorMessage').text(message);
+            $('#errorAlert').removeClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+        
+        function showSuccess(message) {
+            $('#successMessage').text(message);
+            $('#successAlert').removeClass('d-none');
+            $('#errorAlert').addClass('d-none');
+            
+            // Auto-hide success message after 3 seconds
+            setTimeout(() => {
+                $('#successAlert').addClass('d-none');
+            }, 3000);
+        }
+        
+        function hideAlerts() {
+            $('#errorAlert').addClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+    </script>
+</body>
+</html>

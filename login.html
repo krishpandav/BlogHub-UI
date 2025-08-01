@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BlogHub</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <script src="assets/css/style.css"></script>
+</head>
+
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">Home</a>
+                <a class="nav-link" href="register.html">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold">Welcome Back</h2>
+                            <p class="text-muted">Sign in to your BlogHub account</p>
+                        </div>
+
+                        <!-- Error Alert -->
+                        <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+                            <span id="errorMessage"></span>
+                        </div>
+
+                        <!-- Success Alert -->
+                        <div id="successAlert" class="alert alert-success d-none" role="alert">
+                            <span id="successMessage"></span>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email or Username</label>
+                                <input type="text" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">
+                                    Please provide a valid email or username.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required
+                                    minlength="6">
+                                <div class="invalid-feedback">
+                                    Password must be at least 6 characters long.
+                                </div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Remember me
+                                </label>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary-custom" id="loginBtn">
+                                    <span class="spinner-border spinner-border-sm d-none me-2" id="loginSpinner"></span>
+                                    Sign In
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Don't have an account?
+                                <a href="register.html" class="text-decoration-none">Create one here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Credentials -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="card-title">Demo Credentials</h6>
+                        <p class="text-muted small">You can login with either email or username</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">User Account:</small><br>
+                                <small>Email: user@demo.com</small><br>
+                                <small>Username: userdemo</small><br>
+                                <small>Password: password123</small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Admin Account:</small><br>
+                                <small>Email: admin@demo.com</small><br>
+                                <small>Username: admindemo</small><br>
+                                <small>Password: admin123</small>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-secondary me-2" onclick="fillDemoUserEmail()">Fill
+                                User (Email)</button>
+                            <button class="btn btn-sm btn-outline-secondary me-2" onclick="fillDemoUserUsername()">Fill
+                                User (Username)</button>
+                            <button class="btn btn-sm btn-outline-secondary me-2" onclick="fillDemoAdminEmail()">Fill
+                                Admin (Email)</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="fillDemoAdminUsername()">Fill
+                                Admin (Username)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-5 py-4 border-top">
+        <div class="container">
+            <div class="text-center">
+                <p class="text-muted mb-0">&copy; 2024 BlogHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Redirect if already authenticated
+            if (Auth.redirectIfAuthenticated()) {
+                return;
+            }
+
+            // Handle form submission
+            $('#loginForm').on('submit', function (e) {
+                e.preventDefault();
+                handleLogin();
+            });
+
+            // Handle demo credential buttons
+            window.fillDemoUserEmail = function () {
+                $('#email').val('user@demo.com');
+                $('#password').val('password123');
+            };
+
+            window.fillDemoUserUsername = function () {
+                $('#email').val('userdemo');
+                $('#password').val('password123');
+            };
+
+            window.fillDemoAdminEmail = function () {
+                $('#email').val('admin@demo.com');
+                $('#password').val('admin123');
+            };
+
+            window.fillDemoAdminUsername = function () {
+                $('#email').val('admindemo');
+                $('#password').val('admin123');
+            };
+        });
+
+        function handleLogin() {
+            const form = document.getElementById('loginForm');
+            const formData = new FormData(form);
+
+            // Validate form
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            // Get form data
+            const credentials = {
+                username: formData.get('email'),
+                password: formData.get('password')
+            };
+
+            const rememberMe = formData.get('rememberMe') === 'on';
+
+            // Show loading state
+            showLoading(true);
+            hideAlerts();
+
+            // Attempt login
+            Auth.login(credentials, rememberMe)
+                .then(response => {
+                    showSuccess('Login successful! Redirecting...');
+
+                    // Redirect after short delay
+                    setTimeout(() => {
+                        const redirectUrl = UTILS.getUrlParameter('redirect') || 'index.html';
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                })
+                .catch(error => {
+                    showError(error.message || 'Login failed. Please try again.');
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+
+        function showLoading(show) {
+            const $btn = $('#loginBtn');
+            const $spinner = $('#loginSpinner');
+
+            if (show) {
+                $btn.prop('disabled', true);
+                $spinner.removeClass('d-none');
+                $btn.text(' Signing In...');
+            } else {
+                $btn.prop('disabled', false);
+                $spinner.addClass('d-none');
+                $btn.text('Sign In');
+            }
+        }
+
+        function showError(message) {
+            $('#errorMessage').text(message);
+            $('#errorAlert').removeClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+
+        function showSuccess(message) {
+            $('#successMessage').text(message);
+            $('#successAlert').removeClass('d-none');
+            $('#errorAlert').addClass('d-none');
+        }
+
+        function hideAlerts() {
+            $('#errorAlert').addClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+    </script>
+</body>
+
+</html>

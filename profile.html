@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - BlogHub</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav" id="authNav">
+                    <!-- Auth navigation will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5 d-none">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Profile Content -->
+        <div id="profileContent">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="fw-bold">User Profile</h1>
+                        <div id="profileActions">
+                            <!-- Actions will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Profile Card -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 100px; height: 100px;">
+                                    <span class="text-white fw-bold fs-2" id="userInitial">U</span>
+                                </div>
+                                <div>
+                                    <h2 class="mb-1" id="userName">User Name</h2>
+                                    <p class="text-muted mb-2" id="userEmail">user@example.com</p>
+                                    <p class="mb-0" id="userBio">User bio will be loaded here</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Username:</strong> <span id="userUsername">username</span></p>
+                                    <p class="mb-1"><strong>Member Since:</strong> <span id="userJoined">January 1, 2023</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Role:</strong> <span id="userRole">User</span></p>
+                                    <p class="mb-1"><strong>Status:</strong> <span id="userStatus">Active</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Blogs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Recent Blogs</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="userBlogsList">
+                                <p class="text-muted">Loading user blogs...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- User Stats -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">User Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <h3 class="mb-0" id="blogCount">0</h3>
+                                    <p class="text-muted mb-0">Blogs</p>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h3 class="mb-0" id="likeCount">0</h3>
+                                    <p class="text-muted mb-0">Likes</p>
+                                </div>
+                                <div class="col-6">
+                                    <h3 class="mb-0" id="commentCount">0</h3>
+                                    <p class="text-muted mb-0">Comments</p>
+                                </div>
+                                <div class="col-6">
+                                    <h3 class="mb-0" id="followerCount">0</h3>
+                                    <p class="text-muted mb-0">Followers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popular Blogs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Popular Blogs</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="popularBlogsList">
+                                <p class="text-muted">Loading popular blogs...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4 border-top">
+        <div class="container">
+            <div class="text-center">
+                <p class="text-muted mb-0">&copy; 2024 BlogHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+    
+    <script>
+        let userId = null;
+        
+        $(document).ready(function() {
+            // Get user ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            userId = urlParams.get('id');
+            
+            if (!userId) {
+                showError('User ID not provided');
+                return;
+            }
+            
+            // Load profile data
+            loadProfileData(userId);
+            
+            // Update navigation
+            Auth.updateNavigation();
+        });
+        
+        function loadProfileData(id) {
+            showLoading(true);
+            hideAlerts();
+            
+            // Load user profile
+            UserAPI.getPublicProfile(id)
+                .then(response => {
+                    if (response.success && response.user) {
+                        renderProfile(response.user);
+                        loadUserStats(response.user);
+                        loadUserBlogs(id);
+                    } else {
+                        showError('User not found');
+                    }
+                })
+                .catch(error => {
+                    showError('Error loading profile: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function renderProfile(user) {
+            // Set user initial
+            const initial = (user.name || user.username || 'U').charAt(0).toUpperCase();
+            $('#userInitial').text(initial);
+            
+            // Set user details
+            $('#userName').text(user.name || 'No name');
+            $('#userEmail').text(user.email);
+            $('#userBio').text(user.bio || 'No bio available');
+            $('#userUsername').text(user.username);
+            $('#userRole').text(user.role === 'admin' ? 'Administrator' : 'User');
+            $('#userStatus').text(user.status === 'active' ? 'Active' : 'Inactive');
+            
+            // Format join date
+            if (user.created_at) {
+                const joinDate = new Date(user.created_at);
+                $('#userJoined').text(joinDate.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                }));
+            }
+            
+            // Show actions if this is the current user's profile
+            const currentUser = Auth.getCurrentUser();
+            if (currentUser && currentUser.id === user._id) {
+                $('#profileActions').html(`
+                    <a href="profile-me.html" class="btn btn-primary-custom">Edit Profile</a>
+                `);
+            }
+        }
+        
+        function loadUserStats(user) {
+            // For now, we'll use placeholder values since the API doesn't return these stats
+            $('#blogCount').text(user.blogCount || 0);
+            $('#likeCount').text(user.likeCount || 0);
+            $('#commentCount').text(user.commentCount || 0);
+            $('#followerCount').text(user.followerCount || 0);
+        }
+        
+        function loadUserBlogs(userId) {
+            BlogAPI.getAllBlogs(1, 5)
+                .then(response => {
+                    if (response.success && response.blogs) {
+                        renderUserBlogs(response.blogs);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading user blogs:', error);
+                });
+        }
+        
+        function renderUserBlogs(blogs) {
+            if (blogs.length === 0) {
+                $('#userBlogsList').html('<p class="text-muted">This user hasn\'t created any blogs yet.</p>');
+                return;
+            }
+            
+            let html = '';
+            blogs.forEach(blog => {
+                html += `
+                    <div class="mb-3 pb-3 border-bottom">
+                        <h6 class="mb-1">
+                            <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
+                                ${UTILS.escapeHtml(blog.title)}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            ${UTILS.formatDateRelative(blog.created_at)} • 
+                            ${blog.likesCount || 0} likes
+                        </small>
+                    </div>
+                `;
+            });
+            
+            // Remove last border
+            html = html.replace(/border-bottom$/, '');
+            
+            $('#userBlogsList').html(html);
+        }
+        
+        function showLoading(show) {
+            if (show) {
+                $('#loadingSpinner').removeClass('d-none');
+            } else {
+                $('#loadingSpinner').addClass('d-none');
+            }
+        }
+        
+        function showError(message) {
+            $('#errorMessage').text(message);
+            $('#errorAlert').removeClass('d-none');
+        }
+        
+        function hideAlerts() {
+            $('#errorAlert').addClass('d-none');
+        }
+    </script>
+</body>
+</html>

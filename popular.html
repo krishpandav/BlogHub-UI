@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popular Blogs - BlogHub</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav" id="authNav">
+                    <!-- Auth navigation will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5 d-none">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Popular Blogs Content -->
+        <div id="popularBlogsContent">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-bold">Popular Blogs</h1>
+                <a href="index.html" class="btn btn-outline-secondary">All Blogs</a>
+            </div>
+
+            <!-- Search -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search popular blogs...">
+                        <button class="btn btn-outline-secondary" id="searchBtn">Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blogs List -->
+            <div id="blogsList">
+                <p class="text-muted">Loading popular blogs...</p>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Blogs pagination">
+                <ul class="pagination justify-content-center" id="blogsPagination">
+                    <!-- Pagination will be loaded here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4 border-top">
+        <div class="container">
+            <div class="text-center">
+                <p class="text-muted mb-0">&copy; 2024 BlogHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+    
+    <script>
+        let currentPage = 1;
+        let currentSearch = '';
+        
+        $(document).ready(function() {
+            // Load popular blogs
+            loadPopularBlogs();
+            
+            // Bind events
+            bindEvents();
+            
+            // Update navigation
+            Auth.updateNavigation();
+        });
+        
+        function bindEvents() {
+            // Search
+            $('#searchBtn').on('click', function() {
+                currentSearch = $('#searchInput').val().trim();
+                currentPage = 1;
+                loadPopularBlogs();
+            });
+            
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    $('#searchBtn').click();
+                }
+            });
+        }
+        
+        function loadPopularBlogs(page = 1) {
+            currentPage = page;
+            showLoading(true);
+            hideAlerts();
+            
+            // Use the popular blogs endpoint
+            BlogAPI.getPopularBlogs(20)
+                .then(response => {
+                    if (response.success && response.blogs) {
+                        renderBlogs(response.blogs);
+                        // For popular blogs, we don't need pagination since we're showing top blogs
+                        $('#blogsPagination').empty();
+                    } else {
+                        $('#blogsList').html('<p class="text-muted">No popular blogs found.</p>');
+                    }
+                })
+                .catch(error => {
+                    showError('Error loading popular blogs: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function renderBlogs(blogs) {
+            if (blogs.length === 0) {
+                $('#blogsList').html('<p class="text-muted">No popular blogs found.</p>');
+                return;
+            }
+            
+            let html = '';
+            blogs.forEach((blog, index) => {
+                // Add a special class for top 3 popular blogs
+                const isTopThree = index < 3 ? 'border-start-primary' : '';
+                const rank = index + 1;
+                const rankBadge = rank <= 3 ? 
+                    `<span class="badge ${rank === 1 ? 'bg-warning' : rank === 2 ? 'bg-secondary' : 'bg-dark'} me-2">#${rank}</span>` : 
+                    `<span class="me-2">${rank}.</span>`;
+                
+                // Add image HTML if blog has an image
+                const imageHtml = blog.image ? 
+                    `<div class="mb-3">
+                        <img src="${blog.image}" alt="${UTILS.escapeHtml(blog.title)}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    </div>` : '';
+                
+                html += `
+                    <div class="card mb-4 blog-card ${isTopThree}">
+                        ${imageHtml}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    ${rankBadge}
+                                    <h5 class="card-title d-inline">
+                                        <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
+                                            ${UTILS.escapeHtml(blog.title)}
+                                        </a>
+                                    </h5>
+                                </div>
+                                ${blog.category ? `<span class="blog-category">${UTILS.escapeHtml(blog.category.name || blog.category)}</span>` : ''}
+                            </div>
+                            
+                            <p class="card-text text-muted">
+                                ${UTILS.truncateText(blog.excerpt || blog.content || '', 150)}
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">
+                                        By <a href="profile.html?id=${blog.author?.id}" class="text-decoration-none">${UTILS.escapeHtml(blog.author?.name || blog.authorName || 'Unknown')}</a> •
+                                        ${UTILS.formatDateRelative(blog.created_at)}
+                                    </small>
+                                </div>
+                                
+                                <div>
+                                    ${Auth.isAuthenticated() ? `
+                                        <button class="like-btn ${blog.isLiked ? 'liked' : ''}" data-blog-id="${blog._id}">
+                                            ${blog.isLiked ? '♥' : '♡'} ${blog.likesCount || 0}
+                                        </button>
+                                    ` : `
+                                        <span class="text-muted">♡ ${blog.likesCount || 0}</span>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            $('#blogsList').html(html);
+            
+            // Bind like events
+            if (Auth.isAuthenticated()) {
+                $('.like-btn').on('click', function() {
+                    const blogId = $(this).data('blog-id');
+                    const isLiked = $(this).hasClass('liked');
+                    handleLike(blogId, isLiked);
+                });
+            }
+        }
+        
+        function renderPagination(pagination) {
+            const $pagination = $('#blogsPagination');
+            
+            if (!pagination.totalPages || pagination.totalPages <= 1) {
+                $pagination.empty();
+                return;
+            }
+            
+            const currentPage = pagination.currentPage || 1;
+            const totalPages = pagination.totalPages;
+            
+            let html = '';
+            
+            // Previous button
+            html += `
+                <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadPopularBlogs(${currentPage - 1})">Previous</a>
+                </li>
+            `;
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="loadPopularBlogs(1)">1</a></li>`;
+                if (startPage > 2) {
+                    html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadPopularBlogs(${i})">${i}</a>
+                    </li>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="loadPopularBlogs(${totalPages})">${totalPages}</a></li>`;
+            }
+            
+            // Next button
+            html += `
+                <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadPopularBlogs(${currentPage + 1})">Next</a>
+                </li>
+            `;
+            
+            $pagination.html(html);
+        }
+        
+        function handleLike(blogId, isLiked) {
+            const $btn = $(`.like-btn[data-blog-id="${blogId}"]`);
+            $btn.prop('disabled', true);
+            
+            const apiCall = isLiked ? BlogAPI.unlikeBlog(blogId) : BlogAPI.likeBlog(blogId);
+            
+            apiCall
+                .then(response => {
+                    if (response.success) {
+                        // Update button state
+                        $btn.toggleClass('liked');
+                        
+                        // Update like count
+                        const currentCount = parseInt($btn.text().match(/\d+/) || [0])[0];
+                        const newCount = isLiked ? currentCount - 1 : currentCount + 1;
+                        $btn.html(`${isLiked ? '♡' : '♥'} ${newCount}`);
+                        
+                        UTILS.showToast(isLiked ? 'Blog unliked' : 'Blog liked', 'success');
+                    } else {
+                        UTILS.showToast('Failed to update like status', 'error');
+                    }
+                })
+                .catch(error => {
+                    UTILS.showToast('Error updating like status: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    $btn.prop('disabled', false);
+                });
+        }
+        
+        function showLoading(show) {
+            if (show) {
+                $('#loadingSpinner').removeClass('d-none');
+                $('#blogsList').addClass('d-none');
+            } else {
+                $('#loadingSpinner').addClass('d-none');
+                $('#blogsList').removeClass('d-none');
+            }
+        }
+        
+        function showError(message) {
+            $('#errorMessage').text(message);
+            $('#errorAlert').removeClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+        
+        function showSuccess(message) {
+            $('#successMessage').text(message);
+            $('#successAlert').removeClass('d-none');
+            $('#errorAlert').addClass('d-none');
+            
+            // Auto-hide success message after 3 seconds
+            setTimeout(() => {
+                $('#successAlert').addClass('d-none');
+            }, 3000);
+        }
+        
+        function hideAlerts() {
+            $('#errorAlert').addClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+    </script>
+</body>
+</html>

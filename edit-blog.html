@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Blog - BlogHub</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav" id="authNav">
+                    <!-- Auth navigation will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5 d-none">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Success Alert -->
+        <div id="successAlert" class="alert alert-success d-none" role="alert">
+            <span id="successMessage"></span>
+        </div>
+
+        <!-- Blog Form -->
+        <div id="blogFormContainer">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-bold">Edit Blog</h1>
+                <div>
+                    <a href="my-blogs.html" class="btn btn-outline-secondary me-2">My Blogs</a>
+                    <button class="btn btn-outline-danger" id="deleteBlogBtn">
+                        Delete Blog
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="blogForm">
+                                <input type="hidden" id="blogId">
+                                
+                                <div class="mb-3">
+                                    <label for="blogTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="blogTitle" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="blogCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="blogCategory" required>
+                                        <option value="">Select a category</option>
+                                        <!-- Categories will be loaded here -->
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="blogContent" class="form-label">Content</label>
+                                    <textarea class="form-control" id="blogContent" rows="15" required></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="blogExcerpt" class="form-label">Excerpt (Short description)</label>
+                                    <textarea class="form-control" id="blogExcerpt" rows="3"></textarea>
+                                    <div class="form-text">A brief summary of your blog post (optional)</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="blogImage" class="form-label">Blog Image</label>
+                                    <input type="file" class="form-control" id="blogImage" accept="image/*">
+                                    <div class="form-text">Upload an image for your blog post (optional)</div>
+                                    <div id="imagePreview" class="mt-2">
+                                        <img src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="blogTags" class="form-label">Tags</label>
+                                    <input type="text" class="form-control" id="blogTags" placeholder="tag1, tag2, tag3">
+                                    <div class="form-text">Separate tags with commas (optional)</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="blogStatus" class="form-label">Status</label>
+                                    <select class="form-select" id="blogStatus">
+                                        <option value="draft">Draft</option>
+                                        <option value="published">Published</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" id="previewBtn">
+                                        Preview
+                                    </button>
+                                    <div>
+                                        <button type="button" class="btn btn-secondary me-2" id="saveDraftBtn">
+                                            Save Draft
+                                        </button>
+                                        <button type="submit" class="btn btn-primary-custom" id="publishBtn">
+                                            Update
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Blog Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Created:</strong> <span id="blogCreated">-</span></p>
+                            <p><strong>Last Updated:</strong> <span id="blogUpdated">-</span></p>
+                            <p><strong>Status:</strong> <span id="blogCurrentStatus">-</span></p>
+                            <p><strong>Likes:</strong> <span id="blogLikes">0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Tips for Editing</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="mb-0">
+                                <li>Save drafts frequently</li>
+                                <li>Preview before publishing</li>
+                                <li>Check for spelling errors</li>
+                                <li>Update tags if content changes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4 border-top">
+        <div class="container">
+            <div class="text-center">
+                <p class="text-muted mb-0">&copy; 2024 BlogHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+    
+    <script>
+        let blogId = null;
+        
+        $(document).ready(function() {
+            // Check if user is authenticated
+            if (!Auth.requireAuth()) {
+                return;
+            }
+            
+            // Get blog ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            blogId = urlParams.get('id');
+            
+            if (!blogId) {
+                showError('Blog ID not provided');
+                return;
+            }
+            
+            // Load blog data
+            loadBlogData(blogId);
+            
+            // Load categories
+            loadCategories();
+            
+            // Bind events
+            bindEvents();
+        });
+        
+        function bindEvents() {
+            // Form submission
+            $('#blogForm').on('submit', function(e) {
+                e.preventDefault();
+                updateBlog();
+            });
+            
+            // Save draft
+            $('#saveDraftBtn').on('click', function() {
+                saveBlog('draft');
+            });
+            
+            // Preview
+            $('#previewBtn').on('click', function() {
+                previewBlog();
+            });
+            
+            // Delete blog
+            $('#deleteBlogBtn').on('click', function() {
+                deleteBlog();
+            });
+            
+            // Image preview
+            $('#blogImage').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#imagePreview img').attr('src', e.target.result);
+                        $('#imagePreview').removeClass('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    $('#imagePreview').addClass('d-none');
+                }
+            });
+        }
+        
+        function loadBlogData(id) {
+            showLoading(true);
+            
+            BlogAPI.getBlog(id)
+                .then(response => {
+                    if (response.success && response.blog) {
+                        renderBlogData(response.blog);
+                    } else {
+                        showError('Blog not found');
+                    }
+                })
+                .catch(error => {
+                    showError('Error loading blog: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function renderBlogData(blog) {
+            // Set blog ID
+            $('#blogId').val(blog._id);
+            
+            // Set form values
+            $('#blogTitle').val(blog.title);
+            $('#blogContent').val(blog.content);
+            $('#blogExcerpt').val(blog.excerpt);
+            $('#blogStatus').val(blog.status);
+            
+            // Set category
+            if (blog.category) {
+                $('#blogCategory').val(blog.category._id);
+            }
+            
+            // Set tags
+            if (blog.tags && blog.tags.length > 0) {
+                $('#blogTags').val(blog.tags.join(', '));
+            }
+            
+            // Set image preview if available
+            if (blog.image) {
+                $('#imagePreview img').attr('src', blog.image);
+                $('#imagePreview').removeClass('d-none');
+            } else {
+                $('#imagePreview').addClass('d-none');
+            }
+            
+            // Set blog information
+            $('#blogCreated').text(UTILS.formatDate(blog.created_at));
+            $('#blogUpdated').text(UTILS.formatDate(blog.updated_at || blog.created_at));
+            $('#blogCurrentStatus').text(blog.status);
+            $('#blogLikes').text(blog.likesCount || 0);
+        }
+        
+        function loadCategories() {
+            CategoryAPI.getCategories()
+                .then(response => {
+                    if (response.success && response.categories) {
+                        renderCategories(response.categories);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading categories:', error);
+                });
+        }
+        
+        function renderCategories(categories) {
+            let html = '<option value="">Select a category</option>';
+            categories.forEach(category => {
+                html += `<option value="${category._id}">${UTILS.escapeHtml(category.name)}</option>`;
+            });
+            $('#blogCategory').html(html);
+        }
+        
+        function saveBlog(status) {
+            const blogData = getBlogData();
+            blogData.status = status;
+            
+            if (!blogData.title || !blogData.content) {
+                showError('Please fill in all required fields');
+                return;
+            }
+            
+            // Handle image upload
+            const fileInput = document.getElementById('blogImage');
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Add base64 image data to blogData
+                    blogData.image = e.target.result;
+                    
+                    // Now send the request
+                    sendBlogRequest(blogData);
+                };
+                
+                reader.onerror = function(e) {
+                    showError('Error reading image file');
+                    showLoading(false);
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                // No image, send request directly
+                sendBlogRequest(blogData);
+            }
+        }
+        
+        function sendBlogRequest(blogData) {
+            showLoading(true);
+            
+            BlogAPI.updateBlog(blogData)
+                .then(response => {
+                    if (response.success) {
+                        if (blogData.status === 'draft') {
+                            showSuccess('Draft saved successfully');
+                        } else {
+                            showSuccess('Blog updated successfully');
+                        }
+                        
+                        // Reload blog data to show updated info
+                        loadBlogData(blogId);
+                    } else {
+                        showError('Error saving blog: ' + response.message);
+                    }
+                })
+                .catch(error => {
+                    showError('Error saving blog: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function updateBlog() {
+            saveBlog($('#blogStatus').val());
+        }
+        
+        function previewBlog() {
+            const blogData = getBlogData();
+            
+            // Create a preview in a new window/tab
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Blog Preview - BlogHub</title>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                    <link href="assets/css/style.css" rel="stylesheet">
+                </head>
+                <body>
+                    <div class="container mt-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h1 class="display-5 fw-bold mb-3">${UTILS.escapeHtml(blogData.title || 'Untitled Blog')}</h1>
+                                <div class="blog-content">
+                                    ${blogData.content ? blogData.content.replace(/\n/g, '<br>') : 'No content to preview'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-secondary" onclick="window.close()">Close Preview</button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+        
+        function deleteBlog() {
+            if (!confirm('Are you sure you want to delete this blog? This cannot be undone.')) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            BlogAPI.deleteBlog(blogId)
+                .then(response => {
+                    if (response.success) {
+                        showSuccess('Blog deleted successfully');
+                        
+                        // Redirect to my blogs page after a short delay
+                        setTimeout(() => {
+                            window.location.href = 'my-blogs.html';
+                        }, 2000);
+                    } else {
+                        showError('Error deleting blog: ' + response.message);
+                    }
+                })
+                .catch(error => {
+                    showError('Error deleting blog: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+        
+        function getBlogData() {
+            const tags = $('#blogTags').val().trim();
+            const tagsArray = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+            
+            // Note: Image will be handled in saveBlog function
+            return {
+                id: blogId,
+                title: $('#blogTitle').val().trim(),
+                categoryId: $('#blogCategory').val(),
+                content: $('#blogContent').val().trim(),
+                excerpt: $('#blogExcerpt').val().trim(),
+                tags: tagsArray
+            };
+        }
+        
+        function showLoading(show) {
+            if (show) {
+                $('#loadingSpinner').removeClass('d-none');
+                $('#publishBtn').prop('disabled', true);
+                $('#saveDraftBtn').prop('disabled', true);
+                $('#deleteBlogBtn').prop('disabled', true);
+            } else {
+                $('#loadingSpinner').addClass('d-none');
+                $('#publishBtn').prop('disabled', false);
+                $('#saveDraftBtn').prop('disabled', false);
+                $('#deleteBlogBtn').prop('disabled', false);
+            }
+        }
+        
+        function showError(message) {
+            $('#errorMessage').text(message);
+            $('#errorAlert').removeClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+        
+        function showSuccess(message) {
+            $('#successMessage').text(message);
+            $('#successAlert').removeClass('d-none');
+            $('#errorAlert').addClass('d-none');
+            
+            // Auto-hide success message after 3 seconds
+            setTimeout(() => {
+                $('#successAlert').addClass('d-none');
+            }, 3000);
+        }
+        
+        function hideAlerts() {
+            $('#errorAlert').addClass('d-none');
+            $('#successAlert').addClass('d-none');
+        }
+    </script>
+</body>
+</html>

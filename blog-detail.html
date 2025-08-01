@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Detail - BlogHub</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="popular.html">Popular</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav" id="authNav">
+                    <!-- Auth navigation will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+            <div class="mt-3">
+                <a href="index.html" class="btn btn-primary-custom">Back to Home</a>
+            </div>
+        </div>
+
+        <!-- Blog Content -->
+        <div id="blogContent" class="d-none">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Article -->
+                    <article>
+                        <header class="mb-4">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="#" id="categoryLink">Category</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page" id="blogTitle">Blog Title
+                                    </li>
+                                </ol>
+                            </nav>
+
+                            <h1 class="display-5 fw-bold mb-3" id="blogTitleDisplay">Blog Title</h1>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 50px; height: 50px;">
+                                    <span class="text-white fw-bold" id="authorInitialSmall">A</span>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0" id="authorName">Author Name</h6>
+                                    <small class="text-muted" id="publishDate">Published Date</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <span class="blog-category" id="blogCategory">Category</span>
+                                <span class="ms-3 text-muted">
+                                    <small id="readTime">5 min read</small>
+                                </span>
+                                <span class="ms-3 text-muted">
+                                    <small id="viewsCount">0 views</small>
+                                </span>
+                            </div>
+                        </header>
+
+                        <!-- Blog Image -->
+                        <div class="mb-4 d-none" id="blogImageContainer">
+                            <img id="blogImage" src="" alt="Blog Image" class="img-fluid rounded">
+                        </div>
+
+                        <!-- Blog Content -->
+                        <div id="blogContentBody" class="blog-content">
+                            <!-- Content will be loaded here -->
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="mb-4" id="tagsContainer">
+                            <h6>Tags:</h6>
+                            <div id="tagsList">
+                                <!-- Tags will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Like/Share Section -->
+                        <div
+                            class="d-flex justify-content-between align-items-center border-top border-bottom py-3 mb-4">
+                            <div>
+                                <button class="like-btn" id="likeBtn">
+                                    <span id="likeIcon">♡</span> <span id="likeCount">0</span>
+                                </button>
+                            </div>
+
+                            <div>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="shareBlog()">
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Author Bio -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style="width: 80px; height: 80px;">
+                                        <span class="text-white fw-bold fs-4" id="authorInitial">A</span>
+                                    </div>
+                                    <div>
+                                        <h5 id="authorBioName">Author Name</h5>
+                                        <p id="authorBio" class="mb-0">Author bio will be loaded here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div id="commentsSection">
+                            <h4>Comments</h4>
+                            <div id="commentsList">
+                                <p class="text-muted">Comments feature coming soon...</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Related Posts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Related Posts</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="relatedPosts">
+                                <!-- Related posts will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popular Posts -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Popular Posts</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="popularPostsSidebar">
+                                <!-- Popular posts will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Categories</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="categoriesSidebar">
+                                <!-- Categories will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4 border-top">
+        <div class="container">
+            <div class="text-center">
+                <p class="text-muted mb-0">&copy; 2024 BlogHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Get blog ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const blogId = urlParams.get('id');
+
+            if (!blogId) {
+                showError('Blog ID not provided');
+                return;
+            }
+
+            // Load blog details
+            loadBlogDetails(blogId);
+
+            // Update navigation
+            Auth.updateNavigation();
+        });
+
+        function loadBlogDetails(blogId) {
+            showLoading(true);
+            hideError();
+
+
+            BlogAPI.getBlog(blogId)
+                .then(response => {
+                    if (response.success && response.data) {
+                        renderBlogDetails(response.data);
+                        loadRelatedPosts(response.data.category?._id);
+                        loadPopularPosts();
+                        loadCategories();
+                    } else {
+                        showError('Blog not found');
+                    }
+                })
+                .catch(error => {
+                    showError('Error loading blog: ' + error.message);
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        }
+
+        function renderBlogDetails(blog) {
+            // Update page title
+            document.title = `${blog.title} - BlogHub`;
+
+            // Update breadcrumb
+            $('#blogTitle').text(blog.title);
+            $('#blogTitleDisplay').text(blog.title);
+
+            if (blog.category) {
+                $('#categoryLink').text(blog.category.name);
+                $('#categoryLink').attr('href', `index.html?category=${blog.category.slug}`);
+                $('#blogCategory').text(blog.category.name);
+            }
+
+            debugger
+            // Update meta information
+            $('#authorName').text(blog.author?.username || 'Unknown Author');
+            $('#publishDate').text(UTILS.formatDate(blog.created_at || blog.publishedAt));
+            $('#readTime').text(`${blog.readTime || 5} min read`);
+            $('#viewsCount').text(`${blog.views || 0} views`);
+
+            // Update author info
+            $('#authorBioName').text(blog.author?.username || 'Unknown Author');
+            $('#authorBio').text(blog.author?.bio || 'No bio available');
+
+            // Update author avatars
+            if (blog.author?.image) {
+                $('#authorAvatar').attr('src', blog.author.image);
+                $('#authorBioAvatar').attr('src', blog.author.image);
+            }
+
+            // Update blog image
+            if (blog.image) {
+                $('#blogImage').attr('src', blog.image);
+                $('#blogImageContainer').removeClass('d-none');
+            } else {
+                $('#blogImageContainer').addClass('d-none');
+            }
+
+            // Update content
+            $('#blogContentBody').html(blog.content || '<p>No content available</p>');
+
+            // Update like button
+            $('#likeCount').text(blog.likes || 0);
+            $('#likeBtn').attr('data-blog-id', blog._id);
+            const isLiked = Auth.getLikedUserBlog().includes(blog._id);
+            if (isLiked) {
+                $('#likeBtn').addClass('liked');
+                $('#likeIcon').text('♥');
+            }
+
+            // Update tags
+            if (blog.tags && blog.tags.length > 0) {
+                let tagsHtml = '';
+                blog.tags.forEach(tag => {
+                    tagsHtml += `<span class="badge bg-secondary me-2">${UTILS.escapeHtml(tag)}</span>`;
+                });
+                $('#tagsList').html(tagsHtml);
+            } else {
+                $('#tagsContainer').hide();
+            }
+
+            // Show content
+            $('#blogContent').removeClass('d-none');
+
+            // Bind like button
+            $('#likeBtn').on('click', handleLike);
+        }
+
+        function loadRelatedPosts(categoryId) {
+            if (!categoryId) {
+                $('#relatedPosts').html('<p class="text-muted">No related posts found</p>');
+                return;
+            }
+
+            BlogAPI.getBlogsByCategory(categoryId, 1, 5)
+                .then(response => {
+                    if (response.success && response.blogs) {
+                        renderRelatedPosts(response.blogs);
+                    } else {
+                        $('#relatedPosts').html('<p class="text-muted">No related posts found</p>');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading related posts:', error);
+                    $('#relatedPosts').html('<p class="text-muted">Error loading related posts</p>');
+                });
+        }
+
+        function renderRelatedPosts(posts) {
+            let html = '';
+            posts.forEach(post => {
+                html += `
+                    <div class="sidebar-item">
+                        <a href="blog-detail.html?id=${post.id}" class="fw-bold">
+                            ${UTILS.escapeHtml(post.title)}
+                        </a>
+                        <div class="text-muted small">
+                            ${UTILS.formatDateRelative(post.created_at)}
+                        </div>
+                    </div>
+                `;
+            });
+            $('#relatedPosts').html(html);
+        }
+
+        function loadPopularPosts() {
+            BlogAPI.getPopularBlogs(5)
+                .then(response => {
+                    if (response.success && response.blogs) {
+                        renderPopularPosts(response.blogs);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading popular posts:', error);
+                });
+        }
+
+        function renderPopularPosts(posts) {
+            let html = '';
+            posts.forEach(post => {
+                html += `
+                    <div class="sidebar-item">
+                        <a href="blog-detail.html?id=${post.id}" class="fw-bold">
+                            ${UTILS.escapeHtml(post.title)}
+                        </a>
+                        <div class="text-muted small">
+                            ${post.likesCount || 0} likes • ${UTILS.formatDateRelative(post.created_at)}
+                        </div>
+                    </div>
+                `;
+            });
+            $('#popularPostsSidebar').html(html);
+        }
+
+        function loadCategories() {
+            CategoryAPI.getCategories()
+                .then(response => {
+                    if (response.success && response.categories) {
+                        renderCategories(response.categories);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading categories:', error);
+                });
+        }
+
+        function renderCategories(categories) {
+            let html = '';
+            categories.forEach(category => {
+                html += `
+                    <div class="sidebar-item">
+                        <a href="index.html?category=${category.slug}">
+                            ${UTILS.escapeHtml(category.name)}
+                            <span class="badge bg-secondary ms-2">${category.blogCount || 0}</span>
+                        </a>
+                    </div>
+                `;
+            });
+            $('#categoriesSidebar').html(html);
+        }
+
+        function handleLike() {
+            if (!Auth.isAuthenticated()) {
+                UTILS.showToast('Please login to like posts', 'error');
+                return;
+            }
+
+            const blogId = $(this).data('blog-id');
+            const isLiked = $(this).hasClass('liked');
+
+            $(this).prop('disabled', true);
+
+            const apiCall = isLiked ? BlogAPI.unlikeBlog(blogId) : BlogAPI.likeBlog(blogId);
+
+            apiCall
+                .then(response => {
+                    if (response.success) {
+                        const currentCount = parseInt($('#likeCount').text());
+                        const newCount = isLiked ? currentCount - 1 : currentCount + 1;
+
+                        $('#likeCount').text(newCount);
+
+                        if (isLiked) {
+                            $(this).removeClass('liked');
+                            $('#likeIcon').text('♡');
+                        } else {
+                            $(this).addClass('liked');
+                            $('#likeIcon').text('♥');
+                        }
+
+                        UTILS.showToast(isLiked ? 'Post unliked' : 'Post liked', 'success');
+                    }
+                })
+                .catch(error => {
+                    UTILS.showToast('Error updating like: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    $(this).prop('disabled', false);
+                });
+        }
+
+        function shareBlog() {
+            const url = window.location.href;
+            const title = $('#blogTitleDisplay').text();
+
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    url: url
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(url).then(() => {
+                    UTILS.showToast('Link copied to clipboard!', 'success');
+                });
+            }
+        }
+
+        function showLoading(show) {
+            if (show) {
+                $('#loadingSpinner').removeClass('d-none');
+                $('#blogContent').addClass('d-none');
+                $('#errorAlert').addClass('d-none');
+            } else {
+                $('#loadingSpinner').addClass('d-none');
+            }
+        }
+
+        function showError(message) {
+            $('#errorMessage').text(message);
+            $('#errorAlert').removeClass('d-none');
+            $('#loadingSpinner').addClass('d-none');
+            $('#blogContent').addClass('d-none');
+        }
+
+        function hideError() {
+            $('#errorAlert').addClass('d-none');
+        }
+    </script>
+</body>
+
+</html>
