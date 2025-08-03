@@ -74,11 +74,11 @@ const BlogHub = {
         debugger
         let html = '';
         categories.forEach(category => {
+            debugger
             html += `
                 <div class="sidebar-item">
                     <a href="#" class="category-filter" data-slug="${category.slug}">
                         ${UTILS.escapeHtml(category.name)}
-                        <span class="badge bg-secondary ms-2">${category.blogCount || 0}</span>
                     </a>
                 </div>
             `;
@@ -235,8 +235,10 @@ const BlogHub = {
                                     <span id="likeIcon">${isLiked ? '♥' : '♡'}</span>
                                     <span id="likeCount">${likesCount}</span>
                                 </button>
-                            ` : `
-                                <span class="text-muted">♡ ${likesCount}</span>
+                                ` : `
+                                <button class="like-btn" data-blog-id="${blog._id}">
+                                    <span class="text-muted">♡ ${likesCount}</span>
+                                </button>
                             `}
                         </div>
                     </div>

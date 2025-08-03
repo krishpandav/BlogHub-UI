@@ -201,7 +201,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">
-                                        By <a href="profile.html?id=${blog.author?.id}" class="text-decoration-none">${UTILS.escapeHtml(blog.author?.name || blog.authorName || 'Unknown')}</a> •
+                                        By <a href="profile.html?id=${blog.author?._id}" class="text-decoration-none">${UTILS.escapeHtml(blog.author?.name || blog.authorName || 'Unknown')}</a> •
                                         ${UTILS.formatDateRelative(blog.created_at)}
                                     </small>
                                 </div>

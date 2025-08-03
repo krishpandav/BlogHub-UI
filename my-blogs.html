@@ -177,6 +177,8 @@
             if (currentStatus) {
                 params.status = currentStatus;
             }
+
+            debugger
             
             UserAPI.getMyBlogs(page, 10)
                 .then(response => {

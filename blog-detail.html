@@ -88,9 +88,6 @@
                             <div class="d-flex align-items-center">
                                 <span class="blog-category" id="blogCategory">Category</span>
                                 <span class="ms-3 text-muted">
-                                    <small id="readTime">5 min read</small>
-                                </span>
-                                <span class="ms-3 text-muted">
                                     <small id="viewsCount">0 views</small>
                                 </span>
                             </div>
@@ -245,7 +242,7 @@
                 .then(response => {
                     if (response.success && response.data) {
                         renderBlogDetails(response.data);
-                        loadRelatedPosts(response.data.category?._id);
+                        loadRelatedPosts(response.data.category?.slug);
                         loadPopularPosts();
                         loadCategories();
                     } else {
@@ -278,7 +275,6 @@
             // Update meta information
             $('#authorName').text(blog.author?.username || 'Unknown Author');
             $('#publishDate').text(UTILS.formatDate(blog.created_at || blog.publishedAt));
-            $('#readTime').text(`${blog.readTime || 5} min read`);
             $('#viewsCount').text(`${blog.views || 0} views`);
 
             // Update author info
@@ -329,16 +325,17 @@
             $('#likeBtn').on('click', handleLike);
         }
 
-        function loadRelatedPosts(categoryId) {
-            if (!categoryId) {
+        function loadRelatedPosts(categorySlug) {
+            debugger
+            if (!categorySlug) {
                 $('#relatedPosts').html('<p class="text-muted">No related posts found</p>');
                 return;
             }
 
-            BlogAPI.getBlogsByCategory(categoryId, 1, 5)
+            BlogAPI.getBlogsByCategory(categorySlug, 1, 5)
                 .then(response => {
-                    if (response.success && response.blogs) {
-                        renderRelatedPosts(response.blogs);
+                    if (response.success && response.data.blogs) {
+                        renderRelatedPosts(response.data.blogs);
                     } else {
                         $('#relatedPosts').html('<p class="text-muted">No related posts found</p>');
                     }
@@ -369,8 +366,9 @@
         function loadPopularPosts() {
             BlogAPI.getPopularBlogs(5)
                 .then(response => {
-                    if (response.success && response.blogs) {
-                        renderPopularPosts(response.blogs);
+                    debugger
+                    if (response.success && response.data) {
+                        renderPopularPosts(response.data);
                     }
                 })
                 .catch(error => {
@@ -381,13 +379,20 @@
         function renderPopularPosts(posts) {
             let html = '';
             posts.forEach(post => {
+                // if (post._id === urlParams.get('id')) {
+                //     return; // Skip the current blog post
+                // }
+
                 html += `
                     <div class="sidebar-item">
-                        <a href="blog-detail.html?id=${post.id}" class="fw-bold">
-                            ${UTILS.escapeHtml(post.title)}
-                        </a>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="blog-detail.html?id=${post.id}" class="fw-bold">
+                                ${UTILS.escapeHtml(post.title)}
+                            </a>
+                            <div class="text-muted small"> ${UTILS.formatDateRelative(post.created_at)}</div>
+                        </div>
                         <div class="text-muted small">
-                            ${post.likesCount || 0} likes • ${UTILS.formatDateRelative(post.created_at)}
+                            ${post.likes || 0} likes • ${post.views || 0} views
                         </div>
                     </div>
                 `;
@@ -398,8 +403,8 @@
         function loadCategories() {
             CategoryAPI.getCategories()
                 .then(response => {
-                    if (response.success && response.categories) {
-                        renderCategories(response.categories);
+                    if (response.success && response.data) {
+                        renderCategories(response.data);
                     }
                 })
                 .catch(error => {
@@ -414,7 +419,6 @@
                     <div class="sidebar-item">
                         <a href="index.html?category=${category.slug}">
                             ${UTILS.escapeHtml(category.name)}
-                            <span class="badge bg-secondary ms-2">${category.blogCount || 0}</span>
                         </a>
                     </div>
                 `;

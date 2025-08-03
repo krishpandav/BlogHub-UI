@@ -1,7 +1,7 @@
 // BlogHub Configuration
 const CONFIG = {
     // API Base URL
-    API_BASE_URL: 'https://fvmdblc9-5051.inc1.devtunnels.ms',
+    API_BASE_URL: 'https://1fklbcvt-5051.inc1.devtunnels.ms',
 
     // API Endpoints
     API_ENDPOINTS: {
