@@ -238,13 +238,13 @@ const AdminAPI = {
     },
     
     // Update user status
-    updateUserStatus: function(userId, status) {
-        return API.put(CONFIG.API_ENDPOINTS.ADMIN_USER_STATUS, { userId, status }, true);
+    updateUserStatus: function(id, isActive) {
+        return API.put(CONFIG.API_ENDPOINTS.ADMIN_USER_STATUS, { id, isActive }, true);
     },
     
     // Delete user
-    deleteUser: function(userId) {
-        const endpoint = `${CONFIG.API_ENDPOINTS.ADMIN_USER_DELETE}/${userId}`;
+    deleteUser: function(id) {
+        const endpoint = `${CONFIG.API_ENDPOINTS.ADMIN_USER_DELETE}/${id}`;
         return API.delete(endpoint, true);
     },
     
@@ -255,13 +255,13 @@ const AdminAPI = {
     },
     
     // Update blog status
-    updateBlogStatus: function(blogId, status) {
-        return API.put(CONFIG.API_ENDPOINTS.ADMIN_BLOG_STATUS, { blogId, status }, true);
+    updateBlogStatus: function(id, status) {
+        return API.put(CONFIG.API_ENDPOINTS.ADMIN_BLOG_STATUS, { id, status }, true);
     },
     
     // Delete blog (admin)
-    deleteBlog: function(blogId) {
-        const endpoint = `${CONFIG.API_ENDPOINTS.ADMIN_BLOG_DELETE}/${blogId}`;
+    deleteBlog: function(id) {
+        const endpoint = `${CONFIG.API_ENDPOINTS.ADMIN_BLOG_DELETE}/${id}`;
         return API.delete(endpoint, true);
     },
     

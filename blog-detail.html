@@ -226,6 +226,12 @@
                 return;
             }
 
+            // Load populer data
+            loadPopularPosts();
+
+            // Load categories
+            loadCategories();
+
             // Load blog details
             loadBlogDetails(blogId);
 
@@ -243,8 +249,6 @@
                     if (response.success && response.data) {
                         renderBlogDetails(response.data);
                         loadRelatedPosts(response.data.category?.slug);
-                        loadPopularPosts();
-                        loadCategories();
                     } else {
                         showError('Blog not found');
                     }
@@ -271,7 +275,7 @@
                 $('#blogCategory').text(blog.category.name);
             }
 
-            debugger
+
             // Update meta information
             $('#authorName').text(blog.author?.username || 'Unknown Author');
             $('#publishDate').text(UTILS.formatDate(blog.created_at || blog.publishedAt));
@@ -326,7 +330,7 @@
         }
 
         function loadRelatedPosts(categorySlug) {
-            debugger
+
             if (!categorySlug) {
                 $('#relatedPosts').html('<p class="text-muted">No related posts found</p>');
                 return;
@@ -366,7 +370,7 @@
         function loadPopularPosts() {
             BlogAPI.getPopularBlogs(5)
                 .then(response => {
-                    debugger
+
                     if (response.success && response.data) {
                         renderPopularPosts(response.data);
                     }

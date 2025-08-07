@@ -178,11 +178,11 @@
                 params.status = currentStatus;
             }
 
-            debugger
+            
             
             UserAPI.getMyBlogs(page, 10)
                 .then(response => {
-                    debugger
+                    
                     if (response.success && response.data.blogs) {
                         renderBlogs(response.data.blogs);
                         renderPagination(response.data.pagination || {});

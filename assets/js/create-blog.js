@@ -67,7 +67,7 @@ function renderCategories(categories) {
 
 function saveBlog(status) {
 
-    debugger
+    
 
     const blogData = getBlogData();
     blogData.status = status;
@@ -138,7 +138,7 @@ function publishBlog() {
 function previewBlog() {
     const blogData = getBlogData();
 
-    debugger
+    
     // Create a preview in a new window / tab
     const previewWindow = window.open('', '_blank');
     previewWindow.document.write(`
@@ -170,7 +170,7 @@ function previewBlog() {
 
 function getBlogData() {
 
-    debugger
+    
     const tags = $('#blogTags').val().trim();
     const tagsArray = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
 

@@ -256,6 +256,7 @@ $(document).ready(function () {
 
 // Handle token expiration globally
 $(document).ajaxError(function (event, xhr, settings) {
+    debugger
     if (xhr.status === 401) {
         // Unauthorized - token might be expired
         Auth.clearAuthData();

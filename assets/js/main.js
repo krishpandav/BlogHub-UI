@@ -71,10 +71,10 @@ const BlogHub = {
             $categoriesList.html('<p class="text-muted">No categories available</p>');
             return;
         }
-        debugger
+
         let html = '';
         categories.forEach(category => {
-            debugger
+
             html += `
                 <div class="sidebar-item">
                     <a href="#" class="category-filter" data-slug="${category.slug}">
@@ -201,6 +201,8 @@ const BlogHub = {
         const isLiked = Auth.getLikedUserBlog().includes(blog._id);
         const likesCount = blog.likes || 0;
 
+
+
         // Add image HTML if blog has an image
         const imageHtml = blog.image ?
             `<div class="mb-3">
@@ -232,7 +234,7 @@ const BlogHub = {
                         <div class="d-flex align-items-center">
                             ${Auth.isAuthenticated() ? `
                                 <button class="like-btn ${isLiked ? 'liked' : ''}" data-blog-id="${blog._id}">
-                                    <span id="likeIcon">${isLiked ? '♥' : '♡'}</span>
+                                    ${isLiked ? '<i class="fa-solid fa-heart" id="likeIcon"></i>' : '<i class="fa-regular fa-heart" id="likeIcon"></i>'}
                                     <span id="likeCount">${likesCount}</span>
                                 </button>
                                 ` : `
@@ -258,15 +260,15 @@ const BlogHub = {
 
         let html = '';
         posts.forEach(post => {
-            const publishedDate = UTILS.formatDateRelative(post.created_at || post.publishedAt);
             html += `
                 <div class="popular-post-item">
-                    <div class="popular-post-title">
+                    <div class="popular-post-title d-flex justify-content-between align-items-center">
                         <a href="blog-detail.html?id=${post._id}">${UTILS.escapeHtml(post.title)}</a>
+                        <div class="text-muted small"> ${UTILS.formatDateRelative(post.created_at)}</div>
                     </div>
-                    <div class="popular-post-meta">
-                        ${publishedDate} • ${post.likes || 0} likes
-                    </div>
+                        <div class="text-muted small">
+                            ${post.likes || 0} likes • ${post.views || 0} views
+                        </div>
                 </div>
             `;
         });
@@ -279,7 +281,7 @@ const BlogHub = {
 
         const $pagination = $('#pagination');
 
-        debugger
+
 
         if (!pagination.totalPages || pagination.totalPages <= 1) {
             $pagination.empty();
@@ -404,7 +406,7 @@ const BlogHub = {
     handleLike: function (e) {
         e.preventDefault();
 
-        debugger
+
 
         if (!Auth.isAuthenticated()) {
             UTILS.showToast('Please login to like posts', 'error');
@@ -425,7 +427,7 @@ const BlogHub = {
                 if (response.success) {
                     // Update button state
                     $btn.toggleClass('liked');
-                    debugger
+
                     // Update like count
                     const currentCount = parseInt(($btn.text().match(/\d+/) || [0])[0]);
                     const newCount = isLiked ? currentCount - 1 : currentCount + 1;
@@ -437,7 +439,15 @@ const BlogHub = {
                 }
             })
             .catch(error => {
-                UTILS.showToast('Error updating like status: ' + error.message, 'error');
+                debugger
+                if (error.message === 'Invalid token') {
+                    Auth.clearAuthData();
+                    UTILS.showToast('Please login to like posts', 'error');
+                    // Redirect to home page
+                    window.location.href = 'index.html';
+                } else {
+                    UTILS.showToast('Error updating like status: ' + error.message, 'error');
+                }
             })
             .finally(() => {
                 $btn.prop('disabled', false);

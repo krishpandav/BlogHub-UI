@@ -1,7 +1,7 @@
 // BlogHub Configuration
 const CONFIG = {
     // API Base URL
-    API_BASE_URL: 'https://1fklbcvt-5051.inc1.devtunnels.ms',
+    API_BASE_URL: 'https://fvmdblc9-5051.inc1.devtunnels.ms',
 
     // API Endpoints
     API_ENDPOINTS: {
@@ -149,7 +149,7 @@ const UTILS = {
     // Show toast notification
     showToast: function (message, type = 'info') {
 
-        debugger
+        
         // Create toast element
         const toast = $(`
             <div class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'primary'} border-0" role="alert">
