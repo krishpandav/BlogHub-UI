@@ -172,7 +172,7 @@
                 // Add image HTML if blog has an image
                 const imageHtml = blog.image ? 
                     `<div class="mb-3">
-                        <img src="${blog.image}" alt="${UTILS.escapeHtml(blog.title)}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        <img src="${blog.image}" alt="${blog.title}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     </div>` : '';
                 
                 html += `
@@ -182,10 +182,10 @@
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h5 class="card-title">
                                     <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
-                                        ${UTILS.escapeHtml(blog.title)}
+                                        ${blog.title}
                                     </a>
                                 </h5>
-                                ${blog.category ? `<span class="blog-category">${UTILS.escapeHtml(blog.category.name || blog.category)}</span>` : ''}
+                                ${blog.category ? `<span class="blog-category">${blog.category.name || blog.category}</span>` : ''}
                             </div>
                             
                             <p class="card-text text-muted">
@@ -195,7 +195,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">
-                                        By ${UTILS.escapeHtml(blog.author?.name || blog.authorName || 'Unknown')} •
+                                        By ${blog.author?.name || blog.authorName || 'Unknown'} •
                                         ${UTILS.formatDateRelative(blog.created_at)}
                                     </small>
                                 </div>

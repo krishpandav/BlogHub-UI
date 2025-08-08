@@ -321,7 +321,7 @@
                     <div class="mb-3 pb-3 border-bottom">
                         <h6 class="mb-1">
                             <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
-                                ${UTILS.escapeHtml(blog.title)}
+                                ${blog.title}
                             </a>
                         </h6>
                         <small class="text-muted">
@@ -350,11 +350,11 @@
                     <div class="mb-3 pb-3 border-bottom">
                         <h6 class="mb-1">
                             <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
-                                ${UTILS.escapeHtml(blog.title)}
+                                ${blog.title}
                             </a>
                         </h6>
                         <small class="text-muted">
-                            By ${UTILS.escapeHtml(blog.author?.name || blog.authorName || 'Unknown')} •
+                            By ${blog.author?.name || blog.authorName || 'Unknown'} •
                             ${UTILS.formatDateRelative(blog.created_at)}
                         </small>
                     </div>

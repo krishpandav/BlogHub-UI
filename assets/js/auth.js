@@ -118,7 +118,7 @@ const Auth = {
             $authNav.html(`
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        ${UTILS.escapeHtml(user.name || user.username)}
+                        ${user.name || user.username}
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="profile-me.html">My Profile</a></li>

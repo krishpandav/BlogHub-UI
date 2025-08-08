@@ -315,7 +315,7 @@
             if (blog.tags && blog.tags.length > 0) {
                 let tagsHtml = '';
                 blog.tags.forEach(tag => {
-                    tagsHtml += `<span class="badge bg-secondary me-2">${UTILS.escapeHtml(tag)}</span>`;
+                    tagsHtml += `<span class="badge bg-secondary me-2">${tag}</span>`;
                 });
                 $('#tagsList').html(tagsHtml);
             } else {
@@ -356,7 +356,7 @@
                 html += `
                     <div class="sidebar-item">
                         <a href="blog-detail.html?id=${post.id}" class="fw-bold">
-                            ${UTILS.escapeHtml(post.title)}
+                            ${post.title}
                         </a>
                         <div class="text-muted small">
                             ${UTILS.formatDateRelative(post.created_at)}
@@ -391,7 +391,7 @@
                     <div class="sidebar-item">
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="blog-detail.html?id=${post.id}" class="fw-bold">
-                                ${UTILS.escapeHtml(post.title)}
+                                ${post.title}
                             </a>
                             <div class="text-muted small"> ${UTILS.formatDateRelative(post.created_at)}</div>
                         </div>
@@ -422,7 +422,7 @@
                 html += `
                     <div class="sidebar-item">
                         <a href="index.html?category=${category.slug}">
-                            ${UTILS.escapeHtml(category.name)}
+                            ${category.name}
                         </a>
                     </div>
                 `;

@@ -14,8 +14,8 @@ const BlogHub = {
     // Initialize the application
     init: function () {
         this.loadCategories();
-        this.loadBlogs();
         this.loadPopularPosts();
+        this.loadBlogs();
         this.bindEvents();
         this.initializeSearch();
     },
@@ -78,7 +78,7 @@ const BlogHub = {
             html += `
                 <div class="sidebar-item">
                     <a href="#" class="category-filter" data-slug="${category.slug}">
-                        ${UTILS.escapeHtml(category.name)}
+                        ${category.name}
                     </a>
                 </div>
             `;
@@ -108,7 +108,7 @@ const BlogHub = {
                 html += `
                     <li>
                         <a class="dropdown-item category-filter" href="#" data-slug="${category.slug}">
-                            ${UTILS.escapeHtml(category.name)}
+                            ${category.name}
                         </a>
                     </li>
                 `;
@@ -206,7 +206,7 @@ const BlogHub = {
         // Add image HTML if blog has an image
         const imageHtml = blog.image ?
             `<div class="mb-3">
-                <img src="${blog.image}" alt="${UTILS.escapeHtml(blog.title)}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                <img src="${blog.image}" alt="${blog.title}" class="card-img-top" style="height: 200px; object-fit: cover;">
             </div>` : '';
 
         return `
@@ -215,18 +215,18 @@ const BlogHub = {
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h2 class="blog-title">
-                            <a href="blog-detail.html?id=${blog._id}">${UTILS.escapeHtml(blog.title)}</a>
+                            <a href="blog-detail.html?id=${blog._id}">${blog.title}</a>
                         </h2>
-                        ${blog.category ? `<span class="blog-category">${UTILS.escapeHtml(blog.category.name || blog.category)}</span>` : ''}
+                        ${blog.category ? `<span class="blog-category">${blog.category.name || blog.category}</span>` : ''}
                     </div>
                     
                     <div class="blog-meta">
-                        <span>By ${UTILS.escapeHtml(blog.author?.username || blog.authorName || 'Unknown')}</span>
+                        <span>By ${blog.author?.username || blog.authorName || 'Unknown'}</span>
                         <span>${publishedDate}</span>
                         ${blog.readTime ? `<span>${blog.readTime} min read</span>` : ''}
                     </div>
                     
-                    <p class="blog-excerpt">${UTILS.escapeHtml(excerpt)}</p>
+                    <p class="blog-excerpt">${excerpt}</p>
                     
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="blog-detail.html?id=${blog._id}" class="btn btn-outline-primary-custom">Read More</a>
@@ -263,7 +263,7 @@ const BlogHub = {
             html += `
                 <div class="popular-post-item">
                     <div class="popular-post-title d-flex justify-content-between align-items-center">
-                        <a href="blog-detail.html?id=${post._id}">${UTILS.escapeHtml(post.title)}</a>
+                        <a href="blog-detail.html?id=${post._id}">${post.title}</a>
                         <div class="text-muted small"> ${UTILS.formatDateRelative(post.created_at)}</div>
                     </div>
                         <div class="text-muted small">
@@ -422,6 +422,7 @@ const BlogHub = {
 
         const apiCall = isLiked ? BlogAPI.unlikeBlog(blogId) : BlogAPI.likeBlog(blogId);
 
+        debugger
         apiCall
             .then(response => {
                 if (response.success) {
@@ -439,7 +440,6 @@ const BlogHub = {
                 }
             })
             .catch(error => {
-                debugger
                 if (error.message === 'Invalid token') {
                     Auth.clearAuthData();
                     UTILS.showToast('Please login to like posts', 'error');

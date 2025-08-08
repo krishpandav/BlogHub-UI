@@ -327,7 +327,7 @@
         function renderCategories(categories) {
             let html = '<option value="">Select a category</option>';
             categories.forEach(category => {
-                html += `<option value="${category._id}">${UTILS.escapeHtml(category.name)}</option>`;
+                html += `<option value="${category._id}">${category.name}</option>`;
             });
             $('#blogCategory').html(html);
         }
@@ -414,7 +414,7 @@
                     <div class="container mt-4">
                         <div class="card">
                             <div class="card-body">
-                                <h1 class="display-5 fw-bold mb-3">${UTILS.escapeHtml(blogData.title || 'Untitled Blog')}</h1>
+                                <h1 class="display-5 fw-bold mb-3">${blogData.title || 'Untitled Blog'}</h1>
                                 <div class="blog-content">
                                     ${blogData.content ? blogData.content.replace(/\n/g, '<br>') : 'No content to preview'}
                                 </div>

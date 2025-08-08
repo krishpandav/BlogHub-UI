@@ -420,18 +420,18 @@
                 html += `
                     <tr>
                         <td>${user._id}</td>
-                        <td>${UTILS.escapeHtml(user.username)}</td>
-                        <td>${UTILS.escapeHtml(user.email)}</td>
-                        <td>${UTILS.escapeHtml(user.fullName || '')}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.fullName || ''}</td>
                         <td>
                             <span class="badge ${user.role === 'admin' ? 'bg-primary' : 'bg-secondary'}">
-                                ${UTILS.escapeHtml(user.role)}
+                                ${user.role}
                             </span>
                         </td>
                         <td>
                             <button type="button" class="btn btn-sm badge ${user.isActive ? 'bg-success' : 'bg-danger'}"
                                 onclick="updateUserStatus('${user._id}', ${user.isActive ? false : true})" title="${user.isActive ? 'Block' : 'Activate'} User">
-                                ${UTILS.escapeHtml(user.isActive ? 'Active' : user.status === 'blocked' ? 'Blocked' : 'Inactive')}
+                                ${user.isActive ? 'Active' : user.status === 'blocked' ? 'Blocked' : 'Inactive'}
                             </button>
                             <button class="btn btn-sm badge bg-danger ms-2" title="Delete User" onclick="deleteUser('${user._id}')">
                                 <i class="fa-solid fa-trash"></i>
@@ -525,14 +525,14 @@
                 html += `
                     <tr>
                         <td>${blog._id}</td>
-                        <td>${UTILS.escapeHtml(blog.title)}</td>
-                        <td>${UTILS.escapeHtml(blog.author?.username || 'Unknown')}</td>
-                        <td>${UTILS.escapeHtml(blog.category?.name || blog.category || '')}</td>
+                        <td>${blog.title}</td>
+                        <td>${blog.author?.username || 'Unknown'}</td>
+                        <td>${blog.category?.name || blog.category || ''}</td>
                         <td>
                             <button type="button" class="btn btn-sm badge ${blog.status === 'published' ? 'bg-success' : blog.status === 'pending' ? 'bg-warning' : 'bg-secondary'}"
                                 onclick="updateBlogStatus('${blog._id}', '${blog.status === 'published' ? 'blocked' : 'published'}')"
                                 title="${blog.status === 'published' ? 'Block' : 'Approve'} Blog">
-                                    ${UTILS.escapeHtml(blog.status)}
+                                    ${blog.status}
                             </button>
                             <button class="btn btn-sm badge bg-danger ms-2" title="Delete Blog" onclick="deleteBlog('${blog._id}')">
                                 <i class="fa-solid fa-trash"></i>
@@ -639,11 +639,11 @@
                 html += `
                     <tr>
                         <td>${category._id}</td>
-                        <td>${UTILS.escapeHtml(category.name)}</td>
-                        <td>${UTILS.escapeHtml(category.slug)}</td>
-                        <td>${UTILS.escapeHtml(category.description)}</td>
+                        <td>${category.name}</td>
+                        <td>${category.slug}</td>
+                        <td>${category.description}</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary me-2" onclick="editCategory('${category._id}', '${UTILS.escapeHtml(category.name)}', '${UTILS.escapeHtml(category.description)}')">
+                            <button class="btn btn-sm btn-outline-primary me-2" onclick="editCategory('${category._id}', '${category.name}', '${category.description}')">
                                 Edit
                             </button>
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${category._id}')">

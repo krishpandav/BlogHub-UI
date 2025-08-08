@@ -60,14 +60,14 @@ function loadCategories() {
 function renderCategories(categories) {
     let html = '<option value="">Select a category</option>';
     categories.forEach(category => {
-        html += `<option value="${category._id}">${UTILS.escapeHtml(category.name)}</option>`;
+        html += `<option value="${category._id}">${category.name}</option>`;
     });
     $('#blogCategory').html(html);
 }
 
 function saveBlog(status) {
 
-    
+
 
     const blogData = getBlogData();
     blogData.status = status;
@@ -136,41 +136,83 @@ function publishBlog() {
 }
 
 function previewBlog() {
-    const blogData = getBlogData();
+    const blogData = getBlogData(); // blog.title, blog.image, blog.content, etc.
 
-    
-    // Create a preview in a new window / tab
-    const previewWindow = window.open('', '_blank');
-    previewWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Blog Preview - BlogHub</title>
-                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-                        <link href="assets/css/style.css" rel="stylesheet">
-                    </head>
-                    <body>
-                        <div class="container mt-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h1 class="display-5 fw-bold mb-3">${UTILS.escapeHtml(blogData.title || 'Untitled Blog')}</h1>
-                                    <div class="blog-content">
-                                        ${blogData.content ? blogData.content.replace(/\n/g, '<br>') : 'No content to preview'}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-center mt-4">
-                                <button class="btn btn-secondary" onclick="window.close()">Close Preview</button>
-                            </div>
-                        </div>
-                    </body>
-                    </html>
-                `);
+    const fileInput = document.getElementById('blogImage');
+    if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            blogData.image = e.target.result; // Set the image data for preview
+
+            // Now generate the preview
+            showBlogPreview();
+        };
+
+        reader.onerror = function (e) {
+            showError('Error reading image file');
+            showLoading(false);
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        showBlogPreview()
+    }
+
+    function showBlogPreview() {
+        const imageHtml = blogData.image ? `
+        <div class="mb-3">
+            <img src="${blogData.image}" alt="${blogData.title}" class="card-img-top" style="height: 200px; object-fit: cover;">
+        </div>` : '';
+
+        const authorName = blogData.author?.username || blogData.authorName || 'Unknown';
+        const excerpt = blogData.content ? blogData.content.substring(0, 150) + '...' : 'No content';
+        let tagsHtml = '';
+        if (blogData.tags && blogData.tags.length > 0) {
+            blogData.tags.forEach(tag => {
+                tagsHtml += `<span class="badge bg-secondary me-2">${tag}</span>`;
+            });
+        }
+        const previewHtml = `
+            <div class="card blog-card">
+                ${imageHtml}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h2 class="blog-title mb-0">${blogData.title || 'Untitled Blog'}</h2>
+                        category
+                    </div>
+                    <div class="blog-meta mb-2">
+                        <span>By ${authorName}</span>
+                        <span>${new Date().toLocaleDateString()}</span>
+                    </div>
+                    <p class="blog-excerpt">${excerpt}</p>
+                    <div class="blog-content pt-2 border-top">
+                        ${blogData.content ? blogData.content.replace(/\n/g, '<br>') : ''}
+                    </div>
+                </div>
+                ${tagsHtml ? `
+                <div class="mb-4" id="tagsContainer">
+                    <h6>Tags:</h6>
+                    <div id="tagsList">
+                        ${tagsHtml}
+                    </div>
+                </div>` : ''}
+            </div>
+        `;
+
+        document.getElementById('previewBlogContent').innerHTML = previewHtml;
+
+        const previewModal = new bootstrap.Modal(document.getElementById('previewBlogModal'));
+        previewModal.show();
+    }
+
 }
+
 
 function getBlogData() {
 
-    
+
     const tags = $('#blogTags').val().trim();
     const tagsArray = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
 
