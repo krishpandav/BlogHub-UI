@@ -1,36 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Blogs - BlogHub</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+        integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
         <div class="container">
             <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                 </ul>
-                
+
                 <ul class="navbar-nav" id="authNav">
                     <!-- Auth navigation will be loaded here -->
                 </ul>
@@ -110,79 +117,80 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
+
     <!-- Custom JS -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/api.js"></script>
-    
+
     <script>
         let currentPage = 1;
         let currentSearch = '';
         let currentStatus = '';
-        
-        $(document).ready(function() {
+
+        $(document).ready(function () {
             // Check if user is authenticated
             if (!Auth.requireAuth()) {
                 return;
             }
-            
+
             // Load blogs
             loadBlogs();
-            
+
             // Bind events
             bindEvents();
         });
-        
+
         function bindEvents() {
             // Search
-            $('#searchBtn').on('click', function() {
+            $('#searchBtn').on('click', function () {
                 currentSearch = $('#searchInput').val().trim();
                 currentPage = 1;
                 loadBlogs();
             });
-            
-            $('#searchInput').on('keypress', function(e) {
+
+            $('#searchInput').on('keypress', function (e) {
                 if (e.which === 13) {
                     $('#searchBtn').click();
                 }
             });
-            
+
             // Status filter
-            $('#statusFilter').on('change', function() {
+            $('#statusFilter').on('change', function () {
                 currentStatus = $(this).val();
                 currentPage = 1;
                 loadBlogs();
             });
+
         }
-        
+
         function loadBlogs(page = 1) {
             currentPage = page;
             showLoading(true);
             hideAlerts();
-            
+
             // Prepare params
             const params = {
                 page: page,
                 limit: 10
             };
-            
+
             if (currentSearch) {
                 params.search = currentSearch;
             }
-            
+
             if (currentStatus) {
                 params.status = currentStatus;
             }
 
-            
-            
+
+
             UserAPI.getMyBlogs(page, 10)
                 .then(response => {
-                    
+
                     if (response.success && response.data.blogs) {
                         renderBlogs(response.data.blogs);
                         renderPagination(response.data.pagination || {});
@@ -197,21 +205,22 @@
                     showLoading(false);
                 });
         }
-        
+
         function renderBlogs(blogs) {
             if (blogs.length === 0) {
                 $('#blogsList').html('<p class="text-muted">You haven\'t created any blogs yet. <a href="create-blog.html">Create your first blog!</a></p>');
                 return;
             }
-            
+
             let html = '';
             blogs.forEach(blog => {
                 // Add image HTML if blog has an image
-                const imageHtml = blog.image ? 
+                const isLiked = Auth.getLikedUserBlog().includes(blog._id);
+                const imageHtml = blog.image ?
                     `<div class="mb-3">
                         <img src="${blog.image}" alt="${blog.title}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     </div>` : '';
-                
+
                 html += `
                     <div class="card mb-4 blog-card">
                         ${imageHtml}
@@ -231,6 +240,10 @@
                             
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
+                                    <button class="like-btn ${isLiked ? 'liked' : ''}" id="likeBtn" data-blog-id="${blog._id}">
+                                        ${isLiked ? '<i class="fa-solid fa-heart" id="likeIcon"></i>' : '<i class="fa-regular fa-heart" id="likeIcon"></i>'}
+                                        <span id="likeCount">${blog.likes}</span>
+                                    </button>
                                     <span class="badge ${blog.status === 'published' ? 'bg-success' : blog.status === 'pending' ? 'bg-warning' : blog.status === 'rejected' ? 'bg-danger' : 'bg-secondary'}">
                                         ${blog.status}
                                     </span>
@@ -252,41 +265,42 @@
                     </div>
                 `;
             });
-            
+
             $('#blogsList').html(html);
+            $('#likeBtn').on('click', handleLike);
         }
-        
+
         function renderPagination(pagination) {
             const $pagination = $('#blogsPagination');
-            
+
             if (!pagination.totalPages || pagination.totalPages <= 1) {
                 $pagination.empty();
                 return;
             }
-            
+
             const currentPage = pagination.currentPage || 1;
             const totalPages = pagination.totalPages;
-            
+
             let html = '';
-            
+
             // Previous button
             html += `
                 <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
                     <a class="page-link" href="#" onclick="loadBlogs(${currentPage - 1})">Previous</a>
                 </li>
             `;
-            
+
             // Page numbers
             const startPage = Math.max(1, currentPage - 2);
             const endPage = Math.min(totalPages, currentPage + 2);
-            
+
             if (startPage > 1) {
                 html += `<li class="page-item"><a class="page-link" href="#" onclick="loadBlogs(1)">1</a></li>`;
                 if (startPage > 2) {
                     html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
                 }
             }
-            
+
             for (let i = startPage; i <= endPage; i++) {
                 html += `
                     <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -294,35 +308,89 @@
                     </li>
                 `;
             }
-            
+
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) {
                     html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
                 }
                 html += `<li class="page-item"><a class="page-link" href="#" onclick="loadBlogs(${totalPages})">${totalPages}</a></li>`;
             }
-            
+
             // Next button
             html += `
                 <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
                     <a class="page-link" href="#" onclick="loadBlogs(${currentPage + 1})">Next</a>
                 </li>
             `;
-            
+
             $pagination.html(html);
         }
-        
+
+        function handleLike(e) {
+            e.preventDefault();
+
+            if (!Auth.isAuthenticated()) {
+                UTILS.showToast('Please login to like posts', 'error');
+                return;
+            }
+
+            const $btn = $(e.target);
+            const blogId = $btn.data('blog-id');
+            const isLiked = $btn.hasClass('liked');
+
+            // Disable button during request
+            $btn.prop('disabled', true);
+
+            const apiCall = isLiked ? BlogAPI.unlikeBlog(blogId) : BlogAPI.likeBlog(blogId);
+
+
+            apiCall
+                .then(response => {
+                    if (response.success) {
+                        // Update button state
+                        $btn.toggleClass('liked');
+
+                        $('#likeCount').text(response.data.likes);
+
+                        if (isLiked) {
+                            $(this).removeClass('liked');
+                            $('#likeIcon').removeClass('fa-solid').addClass('fa-regular');
+                        } else {
+                            $(this).addClass('liked');
+                            $('#likeIcon').removeClass('fa-regular').addClass('fa-solid');
+                        }
+
+                        UTILS.showToast(isLiked ? 'Post unliked' : 'Post liked', 'success');
+                    } else {
+                        UTILS.showToast('Failed to update like status', 'error');
+                    }
+                })
+                .catch(error => {
+                    if (error.message === 'Invalid token') {
+                        Auth.clearAuthData();
+                        UTILS.showToast('Please login to like posts', 'error');
+                        // Redirect to home page
+                        window.location.href = 'index.html';
+                    } else {
+                        UTILS.showToast('Error updating like status: ' + error.message, 'error');
+                    }
+                })
+                .finally(() => {
+                    $btn.prop('disabled', false);
+                });
+        }
+
         function editBlog(blogId) {
             window.location.href = `edit-blog.html?id=${blogId}`;
         }
-        
+
         function deleteBlog(blogId) {
             if (!confirm('Are you sure you want to delete this blog? This cannot be undone.')) {
                 return;
             }
-            
+
             showLoading(true);
-            
+
             BlogAPI.deleteBlog(blogId)
                 .then(response => {
                     if (response.success) {
@@ -339,7 +407,7 @@
                     showLoading(false);
                 });
         }
-        
+
         function showLoading(show) {
             if (show) {
                 $('#loadingSpinner').removeClass('d-none');
@@ -349,28 +417,29 @@
                 $('#blogsList').removeClass('d-none');
             }
         }
-        
+
         function showError(message) {
             $('#errorMessage').text(message);
             $('#errorAlert').removeClass('d-none');
             $('#successAlert').addClass('d-none');
         }
-        
+
         function showSuccess(message) {
             $('#successMessage').text(message);
             $('#successAlert').removeClass('d-none');
             $('#errorAlert').addClass('d-none');
-            
+
             // Auto-hide success message after 3 seconds
             setTimeout(() => {
                 $('#successAlert').addClass('d-none');
             }, 3000);
         }
-        
+
         function hideAlerts() {
             $('#errorAlert').addClass('d-none');
             $('#successAlert').addClass('d-none');
         }
     </script>
 </body>
+
 </html>

@@ -1,36 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popular Blogs - BlogHub</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+        integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
         <div class="container">
             <a class="navbar-brand fw-bold fs-3" href="index.html">BlogHub</a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                 </ul>
-                
+
                 <ul class="navbar-nav" id="authNav">
                     <!-- Auth navigation will be loaded here -->
                 </ul>
@@ -94,56 +101,54 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
+
     <!-- Custom JS -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/api.js"></script>
-    
+
     <script>
         let currentPage = 1;
         let currentSearch = '';
-        
-        $(document).ready(function() {
+
+        $(document).ready(function () {
             // Load popular blogs
             loadPopularBlogs();
-            
+
             // Bind events
             bindEvents();
-            
+
             // Update navigation
             Auth.updateNavigation();
         });
-        
+
         function bindEvents() {
             // Search
-            $('#searchBtn').on('click', function() {
+            $('#searchBtn').on('click', function () {
                 currentSearch = $('#searchInput').val().trim();
                 currentPage = 1;
                 loadPopularBlogs();
             });
-            
-            $('#searchInput').on('keypress', function(e) {
+
+            $('#searchInput').on('keypress', function (e) {
                 if (e.which === 13) {
                     $('#searchBtn').click();
                 }
             });
         }
-        
+
         function loadPopularBlogs(page = 1) {
             currentPage = page;
             showLoading(true);
             hideAlerts();
-            
             // Use the popular blogs endpoint
             BlogAPI.getPopularBlogs(20)
                 .then(response => {
-                    if (response.success && response.blogs) {
-                        renderBlogs(response.blogs);
-                        // For popular blogs, we don't need pagination since we're showing top blogs
+                    if (response.success && response.data) {
+                        renderBlogs(response.data);
                         $('#blogsPagination').empty();
                     } else {
                         $('#blogsList').html('<p class="text-muted">No popular blogs found.</p>');
@@ -156,28 +161,29 @@
                     showLoading(false);
                 });
         }
-        
+
         function renderBlogs(blogs) {
             if (blogs.length === 0) {
                 $('#blogsList').html('<p class="text-muted">No popular blogs found.</p>');
                 return;
             }
-            
+
             let html = '';
             blogs.forEach((blog, index) => {
                 // Add a special class for top 3 popular blogs
+                const isLiked = Auth.getLikedUserBlog().includes(blog._id);
                 const isTopThree = index < 3 ? 'border-start-primary' : '';
                 const rank = index + 1;
-                const rankBadge = rank <= 3 ? 
-                    `<span class="badge ${rank === 1 ? 'bg-warning' : rank === 2 ? 'bg-secondary' : 'bg-dark'} me-2">#${rank}</span>` : 
+                const rankBadge = rank <= 3 ?
+                    `<span class="badge ${rank === 1 ? 'bg-warning' : rank === 2 ? 'bg-secondary' : 'bg-dark'} me-2">#${rank}</span>` :
                     `<span class="me-2">${rank}.</span>`;
-                
+
                 // Add image HTML if blog has an image
-                const imageHtml = blog.image ? 
+                const imageHtml = blog.image ?
                     `<div class="mb-3">
                         <img src="${blog.image}" alt="${blog.title}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     </div>` : '';
-                
+                debugger
                 html += `
                     <div class="card mb-4 blog-card ${isTopThree}">
                         ${imageHtml}
@@ -195,24 +201,28 @@
                             </div>
                             
                             <p class="card-text text-muted">
-                                ${UTILS.truncateText(blog.excerpt || blog.content || '', 150)}
+                                ${UTILS.truncateText(blog.content || '', 150)}
                             </p>
                             
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">
-                                        By <a href="profile.html?id=${blog.author?._id}" class="text-decoration-none">${blog.author?.name || blog.authorName || 'Unknown'}</a> •
+                                        By <a href="profile.html?id=${blog.author?._id}" class="text-decoration-none">${blog.author?.username || blog.fullname || 'Unknown'}</a> •
                                         ${UTILS.formatDateRelative(blog.created_at)}
                                     </small>
                                 </div>
                                 
                                 <div>
                                     ${Auth.isAuthenticated() ? `
-                                        <button class="like-btn ${blog.isLiked ? 'liked' : ''}" data-blog-id="${blog._id}">
-                                            ${blog.isLiked ? '♥' : '♡'} ${blog.likesCount || 0}
+                                        <button class="like-btn ${isLiked ? 'liked' : ''}" id="likeBtn" data-blog-id="${blog._id}">
+                                            ${isLiked ? '<i class="fa-solid fa-heart" id="likeIcon"></i>' : '<i class="fa-regular fa-heart" id="likeIcon"></i>'}
+                                            <span id="likeCount">${blog.likes}</span>
                                         </button>
-                                    ` : `
-                                        <span class="text-muted">♡ ${blog.likesCount || 0}</span>
+                                        ` : `
+                                        <button class="like-btn" data-blog-id="${blog._id}">
+                                            <i class="fa-regular fa-heart" id="likeIcon"></i>
+                                            <span id="likeCount">${blog.likes}</span>
+                                        </button>
                                     `}
                                 </div>
                             </div>
@@ -220,50 +230,42 @@
                     </div>
                 `;
             });
-            
+
             $('#blogsList').html(html);
-            
-            // Bind like events
-            if (Auth.isAuthenticated()) {
-                $('.like-btn').on('click', function() {
-                    const blogId = $(this).data('blog-id');
-                    const isLiked = $(this).hasClass('liked');
-                    handleLike(blogId, isLiked);
-                });
-            }
+            $('#likeBtn').on('click', handleLike);
         }
-        
+
         function renderPagination(pagination) {
             const $pagination = $('#blogsPagination');
-            
+
             if (!pagination.totalPages || pagination.totalPages <= 1) {
                 $pagination.empty();
                 return;
             }
-            
+
             const currentPage = pagination.currentPage || 1;
             const totalPages = pagination.totalPages;
-            
+
             let html = '';
-            
+
             // Previous button
             html += `
                 <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
                     <a class="page-link" href="#" onclick="loadPopularBlogs(${currentPage - 1})">Previous</a>
                 </li>
             `;
-            
+
             // Page numbers
             const startPage = Math.max(1, currentPage - 2);
             const endPage = Math.min(totalPages, currentPage + 2);
-            
+
             if (startPage > 1) {
                 html += `<li class="page-item"><a class="page-link" href="#" onclick="loadPopularBlogs(1)">1</a></li>`;
                 if (startPage > 2) {
                     html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
                 }
             }
-            
+
             for (let i = startPage; i <= endPage; i++) {
                 html += `
                     <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -271,54 +273,62 @@
                     </li>
                 `;
             }
-            
+
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) {
                     html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
                 }
                 html += `<li class="page-item"><a class="page-link" href="#" onclick="loadPopularBlogs(${totalPages})">${totalPages}</a></li>`;
             }
-            
+
             // Next button
             html += `
                 <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
                     <a class="page-link" href="#" onclick="loadPopularBlogs(${currentPage + 1})">Next</a>
                 </li>
             `;
-            
+
             $pagination.html(html);
         }
-        
-        function handleLike(blogId, isLiked) {
-            const $btn = $(`.like-btn[data-blog-id="${blogId}"]`);
-            $btn.prop('disabled', true);
-            
+
+        function handleLike() {
+            if (!Auth.isAuthenticated()) {
+                UTILS.showToast('Please login to like posts', 'error');
+                return;
+            }
+
+            const blogId = $(this).data('blog-id');
+            const isLiked = $(this).hasClass('liked');
+
+            $(this).prop('disabled', true);
+
             const apiCall = isLiked ? BlogAPI.unlikeBlog(blogId) : BlogAPI.likeBlog(blogId);
-            
+
             apiCall
                 .then(response => {
                     if (response.success) {
-                        // Update button state
-                        $btn.toggleClass('liked');
-                        
-                        // Update like count
-                        const currentCount = parseInt($btn.text().match(/\d+/) || [0])[0];
-                        const newCount = isLiked ? currentCount - 1 : currentCount + 1;
-                        $btn.html(`${isLiked ? '♡' : '♥'} ${newCount}`);
-                        
-                        UTILS.showToast(isLiked ? 'Blog unliked' : 'Blog liked', 'success');
-                    } else {
-                        UTILS.showToast('Failed to update like status', 'error');
+
+                        $('#likeCount').text(response.data.likes);
+
+                        if (isLiked) {
+                            $(this).removeClass('liked');
+                            $('#likeIcon').removeClass('fa-solid').addClass('fa-regular');
+                        } else {
+                            $(this).addClass('liked');
+                            $('#likeIcon').removeClass('fa-regular').addClass('fa-solid');
+                        }
+
+                        UTILS.showToast(isLiked ? 'Post unliked' : 'Post liked', 'success');
                     }
                 })
                 .catch(error => {
-                    UTILS.showToast('Error updating like status: ' + error.message, 'error');
+                    UTILS.showToast('Error updating like: ' + error.message, 'error');
                 })
                 .finally(() => {
-                    $btn.prop('disabled', false);
+                    $(this).prop('disabled', false);
                 });
         }
-        
+
         function showLoading(show) {
             if (show) {
                 $('#loadingSpinner').removeClass('d-none');
@@ -328,28 +338,29 @@
                 $('#blogsList').removeClass('d-none');
             }
         }
-        
+
         function showError(message) {
             $('#errorMessage').text(message);
             $('#errorAlert').removeClass('d-none');
             $('#successAlert').addClass('d-none');
         }
-        
+
         function showSuccess(message) {
             $('#successMessage').text(message);
             $('#successAlert').removeClass('d-none');
             $('#errorAlert').addClass('d-none');
-            
+
             // Auto-hide success message after 3 seconds
             setTimeout(() => {
                 $('#successAlert').addClass('d-none');
             }, 3000);
         }
-        
+
         function hideAlerts() {
             $('#errorAlert').addClass('d-none');
             $('#successAlert').addClass('d-none');
         }
     </script>
 </body>
+
 </html>

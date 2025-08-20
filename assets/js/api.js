@@ -132,6 +132,12 @@ const BlogAPI = {
         return API.get(endpoint);
     },
     
+    // Get all blogs
+    getUserBlogs: function(id) {
+        const endpoint = `${CONFIG.API_ENDPOINTS.BLOGS_BY_USERID}/${id}`;
+        return API.get(endpoint);
+    },
+    
     // Get blogs by category
     getBlogsByCategory: function(categorySlug, page = 1, limit = CONFIG.PAGINATION.BLOGS_PER_PAGE) {
         const endpoint = `${CONFIG.API_ENDPOINTS.BLOGS_BY_CATEGORY}/${categorySlug}?page=${page}&limit=${limit}`;

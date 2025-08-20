@@ -36,9 +36,6 @@ const BlogHub = {
         // Pagination
         $(document).on('click', '.pagination .page-link', this.handlePagination.bind(this));
 
-        // Like/Unlike buttons
-        $(document).on('click', '.like-btn', this.handleLike.bind(this));
-
         // Clear search
         $(document).on('click', '#clearSearch', this.clearSearch.bind(this));
     },
@@ -189,6 +186,7 @@ const BlogHub = {
         });
 
         $container.html(html);
+        $('#likeBtn').on('click', this.handleLike);
 
         // Add fade-in animation
         $container.find('.blog-card').addClass('fade-in');
@@ -221,7 +219,7 @@ const BlogHub = {
                     </div>
                     
                     <div class="blog-meta">
-                        <span>By ${blog.author?.username || blog.authorName || 'Unknown'}</span>
+                        <span>By <a href="profile.html?id=${blog.author?._id}" class="text-decoration-none">${blog.author?.username || blog.authorName || 'Unknown'} </a></span>
                         <span>${publishedDate}</span>
                         ${blog.readTime ? `<span>${blog.readTime} min read</span>` : ''}
                     </div>
@@ -233,13 +231,14 @@ const BlogHub = {
                         
                         <div class="d-flex align-items-center">
                             ${Auth.isAuthenticated() ? `
-                                <button class="like-btn ${isLiked ? 'liked' : ''}" data-blog-id="${blog._id}">
+                                <button class="like-btn ${isLiked ? 'liked' : ''}"  id="likeBtn" data-blog-id="${blog._id}">
                                     ${isLiked ? '<i class="fa-solid fa-heart" id="likeIcon"></i>' : '<i class="fa-regular fa-heart" id="likeIcon"></i>'}
                                     <span id="likeCount">${likesCount}</span>
                                 </button>
                                 ` : `
-                                <button class="like-btn" data-blog-id="${blog._id}">
-                                    <span class="text-muted">♡ ${likesCount}</span>
+                                <button class="like-btn"  id="likeBtn" data-blog-id="${blog._id}">
+                                    <i class="fa-regular fa-heart" id="likeIcon"></i>
+                                    <span id="likeCount">${likesCount}</span>
                                 </button>
                             `}
                         </div>
@@ -403,54 +402,42 @@ const BlogHub = {
     },
 
     // Handle like/unlike
-    handleLike: function (e) {
-        e.preventDefault();
-
-
+    handleLike: function () {
 
         if (!Auth.isAuthenticated()) {
             UTILS.showToast('Please login to like posts', 'error');
             return;
         }
 
-        const $btn = $(e.target);
-        const blogId = $btn.data('blog-id');
-        const isLiked = $btn.hasClass('liked');
+        const blogId = $(this).data('blog-id');
+        const isLiked = $(this).hasClass('liked');
 
-        // Disable button during request
-        $btn.prop('disabled', true);
+        $(this).prop('disabled', true);
 
         const apiCall = isLiked ? BlogAPI.unlikeBlog(blogId) : BlogAPI.likeBlog(blogId);
 
-        debugger
         apiCall
             .then(response => {
                 if (response.success) {
-                    // Update button state
-                    $btn.toggleClass('liked');
 
-                    // Update like count
-                    const currentCount = parseInt(($btn.text().match(/\d+/) || [0])[0]);
-                    const newCount = isLiked ? currentCount - 1 : currentCount + 1;
-                    $btn.html(`${isLiked ? '♡' : '♥'} ${newCount}`);
+                    $('#likeCount').text(response.data.likes);
+
+                    if (isLiked) {
+                        $(this).removeClass('liked');
+                        $('#likeIcon').removeClass('fa-solid').addClass('fa-regular');
+                    } else {
+                        $(this).addClass('liked');
+                        $('#likeIcon').removeClass('fa-regular').addClass('fa-solid');
+                    }
 
                     UTILS.showToast(isLiked ? 'Post unliked' : 'Post liked', 'success');
-                } else {
-                    UTILS.showToast('Failed to update like status', 'error');
                 }
             })
             .catch(error => {
-                if (error.message === 'Invalid token') {
-                    Auth.clearAuthData();
-                    UTILS.showToast('Please login to like posts', 'error');
-                    // Redirect to home page
-                    window.location.href = 'index.html';
-                } else {
-                    UTILS.showToast('Error updating like status: ' + error.message, 'error');
-                }
+                UTILS.showToast('Error updating like: ' + error.message, 'error');
             })
             .finally(() => {
-                $btn.prop('disabled', false);
+                $(this).prop('disabled', false);
             });
     },
 

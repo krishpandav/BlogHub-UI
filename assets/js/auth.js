@@ -203,6 +203,7 @@ const Auth = {
 
             API.get(CONFIG.API_ENDPOINTS.USER_PROFILE, true)
                 .then(response => {
+                    
                     if (response.success) {
                         // Update user data
                         localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
@@ -215,7 +216,7 @@ const Auth = {
                 })
                 .catch(error => {
                     // Token is invalid, clear auth data
-                    // this.clearAuthData();
+                    this.clearAuthData();
                     reject(error);
                 });
         });
@@ -256,7 +257,7 @@ $(document).ready(function () {
 
 // Handle token expiration globally
 $(document).ajaxError(function (event, xhr, settings) {
-    debugger
+    
     if (xhr.status === 401) {
         // Unauthorized - token might be expired
         Auth.clearAuthData();

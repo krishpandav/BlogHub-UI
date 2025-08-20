@@ -10,6 +10,7 @@ const CONFIG = {
         USER_LOGIN: '/api/user/login',
         USER_PROFILE_PUBLIC: '/api/user/profile', // + /:id
         BLOGS_ALL: '/api/blogs',
+        BLOGS_BY_USERID: '/api/blogs/user', // + /:id
         BLOGS_BY_CATEGORY: '/api/blogs/category', // + /:categorySlug
         BLOGS_POPULAR: '/api/blogs/popular',
         BLOG_SINGLE: '/api/blog', // + /:id

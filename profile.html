@@ -194,9 +194,9 @@
             // Load user profile
             UserAPI.getPublicProfile(id)
                 .then(response => {
-                    if (response.success && response.user) {
-                        renderProfile(response.user);
-                        loadUserStats(response.user);
+                    if (response.success && response.data) {
+                        renderProfile(response.data);
+                        loadUserStats(response.data);
                         loadUserBlogs(id);
                     } else {
                         showError('User not found');
@@ -212,16 +212,17 @@
         
         function renderProfile(user) {
             // Set user initial
+            debugger
             const initial = (user.name || user.username || 'U').charAt(0).toUpperCase();
             $('#userInitial').text(initial);
             
             // Set user details
-            $('#userName').text(user.name || 'No name');
+            $('#userName').text(user.fullName || 'No name');
             $('#userEmail').text(user.email);
-            $('#userBio').text(user.bio || 'No bio available');
+            $('#userBio').text(user.bio || '');
             $('#userUsername').text(user.username);
             $('#userRole').text(user.role === 'admin' ? 'Administrator' : 'User');
-            $('#userStatus').text(user.status === 'active' ? 'Active' : 'Inactive');
+            // $('#userStatus').text(user.status === 'active' ? 'Active' : 'Inactive');
             
             // Format join date
             if (user.created_at) {
@@ -251,7 +252,7 @@
         }
         
         function loadUserBlogs(userId) {
-            BlogAPI.getAllBlogs(1, 5)
+            BlogAPI.getUserBlogs(userId)
                 .then(response => {
                     if (response.success && response.blogs) {
                         renderUserBlogs(response.blogs);
@@ -273,14 +274,19 @@
                 html += `
                     <div class="mb-3 pb-3 border-bottom">
                         <h6 class="mb-1">
-                            <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none">
+                            <a href="blog-detail.html?id=${blog._id}" class="text-decoration-none link-primary ">
                                 ${blog.title}
                             </a>
                         </h6>
-                        <small class="text-muted">
-                            ${UTILS.formatDateRelative(blog.created_at)} • 
-                            ${blog.likesCount || 0} likes
-                        </small>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                ${UTILS.formatDateRelative(blog.created_at)} • 
+                                ${blog.likes || 0} likes
+                            </small>
+                            <small class="text-muted small">
+                                ${blog.views || 0} views
+                            </small>
+                        </div>
                     </div>
                 `;
             });
