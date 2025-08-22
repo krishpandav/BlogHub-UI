@@ -1,0 +1,22 @@
+<div class="mb-4">
+  <div class="input-group">
+    <input type="text" class="form-control" id="searchInput" [(ngModel)]="searchtext" placeholder="Search blogs...">
+    <button class="btn btn-outline-secondary" type="button" id="searchBtn" (click)="handleSearch()">Search</button>
+  </div>
+</div>
+
+@if (loading) {
+<div class="d-flex justify-content-center my-4">
+  <div class="spinner-border"></div>
+</div>
+}
+
+@if (!loading && blogs.length === 0) {
+<p>No blogs found</p>
+}
+
+@for (blog of blogs; track blog._id) {
+<app-blog-card [blog]="blog"></app-blog-card>
+}
+
+<app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="loadBlogs($event)"></app-pagination>

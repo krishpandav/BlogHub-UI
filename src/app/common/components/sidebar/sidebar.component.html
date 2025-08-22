@@ -1,0 +1,18 @@
+<div class="card mb-4">
+  <div class="card-header">Categories</div>
+  <div class="card-body">
+    @for (cat of categories; track cat.slug) {
+      <a [routerLink]="['categories', cat.slug]" class="d-block">{{ cat.name }}</a>
+    }
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Popular Posts</div>
+  <div class="card-body">
+    @for (post of popularPosts; track post._id) {
+      <a [routerLink]="['blog', post._id]">{{ post.title }}</a>
+      <div class="small text-muted">{{ post.likes }} likes • {{ post.views }} views</div>
+    }
+  </div>
+</div>

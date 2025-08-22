@@ -1,0 +1,70 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Welcome Back</h2>
+                        <p class="text-muted">Sign in to your BlogHub account</p>
+                    </div>
+
+                    <!-- Alerts -->
+                    @if (errorMessage) {
+                    <div class="alert alert-danger">{{ errorMessage }}</div>
+                    }
+                    @if (successMessage) {
+                    <div class="alert alert-success">{{ successMessage }}</div>
+                    }
+
+                    <!-- Login Form -->
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email or Username</label>
+                            <input type="text" class="form-control" id="email" formControlName="username"
+                                [ngClass]="{'is-invalid': loginForm.get('email')?.touched && loginForm.get('email')?.invalid}" />
+                            @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+                            <div class="invalid-feedback">
+                                Please provide a valid email or username.
+                            </div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" formControlName="password"
+                                [ngClass]="{'is-invalid': loginForm.get('password')?.touched && loginForm.get('password')?.invalid}" />
+                            @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+                            <div class="invalid-feedback">
+                                Password must be at least 4 characters long.
+                            </div>
+                            }
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberme"
+                                formControlName="rememberme" />
+                            <label class="form-check-label" for="rememberme">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary-custom" [disabled]="loading">
+                                @if (loading) {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                {{ loading ? 'Signing In...' : 'Sign In' }}
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Don't have an account?
+                            <a [routerLink]="['/register']" class="text-decoration-none">Create here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

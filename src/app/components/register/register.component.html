@@ -1,0 +1,96 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold">Create Account</h2>
+            <p class="text-muted">Join the BlogHub community</p>
+          </div>
+
+          <!-- Alerts -->
+          @if (errorMessage) {
+          <div class="alert alert-danger">{{ errorMessage }}</div>
+          }
+          @if (successMessage) {
+          <div class="alert alert-success">{{ successMessage }}</div>
+          }
+
+          <!-- Registration Form -->
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" formControlName="username" />
+              @if (registerForm.get('username')?.touched && registerForm.get('username')?.invalid) {
+              <div class="invalid-feedback d-block">
+                Username must be between 3 and 30 characters.
+              </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" formControlName="email" />
+              @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+              <div class="invalid-feedback d-block">
+                Please provide a valid email address.
+              </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" formControlName="fullname" />
+              @if (registerForm.get('fullname')?.touched && registerForm.get('fullname')?.invalid) {
+              <div class="invalid-feedback d-block">
+                Full name must be between 3 and 30 characters.
+              </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" formControlName="password" />
+              <div class="form-text">Use at least 4 characters with a mix of letters and numbers.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" formControlName="confirmPassword" />
+            </div>
+
+            @if (registerForm.get('confirmPassword').touched &&
+            (registerForm.get('confirmPassword').value !== registerForm.get('password').value)) {
+              <div class="invalid-feedback d-block">
+                Password not match.
+              </div>
+            }
+
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input"/>
+              <label class="form-check-label">
+                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+              </label>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary" [disabled]="loading">
+                @if (loading) {
+                <span class="spinner-border spinner-border-sm me-2">
+                </span>
+                }
+                {{ loading ? 'Creating Account...' : 'Create Account' }}
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-4">
+            <p>Already have an account?
+              <a [routerLink]="['/login']">Sign in here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

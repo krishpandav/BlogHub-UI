@@ -1,0 +1,17 @@
+@if (totalPages > 1) {
+  <nav>
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [ngClass]="{'disabled': currentPage <= 1}">
+        <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
+      </li>
+      @for (page of $any([].constructor(totalPages)); track $index; let i = $index) {
+        <li class="page-item" [ngClass]="{'active': i + 1 === currentPage}">
+          <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+        </li>
+      }
+      <li class="page-item" [ngClass]="{'disabled': currentPage >= totalPages}">
+        <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
+      </li>
+    </ul>
+  </nav>
+}

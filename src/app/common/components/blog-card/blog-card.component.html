@@ -1,0 +1,35 @@
+<div class="card mb-4 blog-card">
+  @if (blog.image) {
+  <img [src]="blog.image" class="card-img-top" [alt]="blog.title" style="height:200px;object-fit:cover">
+  }
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h2 class="blog-title">
+        <a [routerLink]="['/blog', blog._id]">{{ blog.title }}</a>
+      </h2>
+      <span class="blog-category">{{ blog.category.name || blog.category }}</span>
+    </div>
+    <div class="blog-meta">
+      <span>By <a [routerLink]="['/profile', blog.author._id]" class="text-decoration-none">
+          {{ blog.author.username || blog.authorName || 'Unknown'}} </a>
+      </span>
+      <span>{{ config.UTILS.formatDateRelative(blog.created_at || blog.publishedAt)}}</span>
+    </div>
+
+    <p class="blog-excerpt">{{ config.UTILS.truncateText(blog.content) }}</p>
+
+    <div class="d-flex justify-content-between align-items-center">
+
+      <a [routerLink]="['/blog', blog._id]" class="btn btn-outline-primary-custom">Read More</a>
+
+      <div class="d-flex align-items-center">
+
+        <button class="like-btn" (click)="toggleLike()">
+          <i [ngClass]="blog.likes ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+          {{ blog.likes + (blog.likes ? 1 : 0) }}
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-3" routerLink="/home">BlogHub</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Left Nav -->
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/home']" routerLinkActive="active">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/popular']" routerLinkActive="active">Popular</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">
+                        Categories
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item category-filter" [routerLink]="['/home']"
+                                routerLinkActive="active">All Categories</a></li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        @for (category of this.categories; track category.slug) {
+                        <li>
+                            <a class="dropdown-item category-filter" [routerLink]="['/categories', category.slug]">
+                                {{category.name}} </a>
+                        </li>
+                        }
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Right Nav (Auth Section) -->
+            <ul class="navbar-nav">
+                @if (isAuthenticated && user) {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        {{ user.name || user.username }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" [routerLink]="['/profile']">My Profile</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/my-blogs']">My Blogs</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/liked-blogs']">Liked Blogs</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/create-blog']">Create Blog</a></li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                        @if (user.role === 'ADMIN') {
+                        <li><a class="dropdown-item" [routerLink]="['admin-dashboard']">Admin Dashboard</a></li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        }
+
+                        <li>
+                            <a class="dropdown-item" (click)="logout()">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+                } @else {
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/login']">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-primary-custom text-black ms-2 px-3" [routerLink]="['/register']">
+                        Register
+                    </a>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
