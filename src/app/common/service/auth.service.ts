@@ -9,6 +9,7 @@ import { ApiService } from './api.service';
 })
 export class AuthService {
   private api!: ApiService; // Will be initialized lazily
+  REMEMBER_ME: boolean = false;
 
   constructor(
     private injector: Injector,
@@ -19,14 +20,21 @@ export class AuthService {
     setTimeout(() => {
       this.api = this.injector.get(ApiService);
     });
+
+    // Load REMEMBER_ME flag from localStorage (only localStorage, since it must survive reloads)
+    this.REMEMBER_ME = JSON.parse(localStorage.getItem(this.config.STORAGE_KEYS.REMEMBER_ME) || 'false');
+  }
+
+  private getStorage(): Storage {
+    return this.REMEMBER_ME ? localStorage : sessionStorage;
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem(this.config.STORAGE_KEYS.AUTH_TOKEN);
+    return !!this.getStorage().getItem(this.config.STORAGE_KEYS.AUTH_TOKEN);
   }
 
   getCurrentUser(): any | null {
-    const userData = localStorage.getItem(this.config.STORAGE_KEYS.USER_DATA);
+    const userData = this.getStorage().getItem(this.config.STORAGE_KEYS.USER_DATA);
     return userData ? JSON.parse(userData) : null;
   }
 
@@ -35,16 +43,37 @@ export class AuthService {
     return user?.likedBlogs || [];
   }
 
+  unlikeBlog(blog_id: string): any {
+    const user = this.getCurrentUser();
+    if (user?.likedBlogs) {
+      user.likedBlogs = user.likedBlogs.filter((id: string) => id !== blog_id);
+      this.getStorage().setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+    }
+  }
+
+  likeBlog(blog_id: string): any {
+    const user = this.getCurrentUser();
+    if (user) {
+      user.likedBlogs = user.likedBlogs || [];
+      user.likedBlogs.push(blog_id);
+      this.getStorage().setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+    }
+  }
+
   getToken(): string | null {
-    return localStorage.getItem(this.config.STORAGE_KEYS.AUTH_TOKEN);
+    return this.getStorage().getItem(this.config.STORAGE_KEYS.AUTH_TOKEN);
   }
 
   setAuthData(token: string, userData: any): void {
-    localStorage.setItem(this.config.STORAGE_KEYS.AUTH_TOKEN, token);
-    localStorage.setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+    const storage = this.getStorage();
+    storage.setItem(this.config.STORAGE_KEYS.AUTH_TOKEN, token);
+    storage.setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+    localStorage.setItem(this.config.STORAGE_KEYS.REMEMBER_ME, JSON.stringify(this.REMEMBER_ME));
   }
 
   clearAuthData(): void {
+    sessionStorage.removeItem(this.config.STORAGE_KEYS.AUTH_TOKEN);
+    sessionStorage.removeItem(this.config.STORAGE_KEYS.USER_DATA);
     localStorage.removeItem(this.config.STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem(this.config.STORAGE_KEYS.USER_DATA);
     localStorage.removeItem(this.config.STORAGE_KEYS.REMEMBER_ME);
@@ -59,10 +88,8 @@ export class AuthService {
     return this.api.post<any>(this.config.API_ENDPOINTS.USER_LOGIN, credentials).pipe(
       tap(response => {
         if (response.success) {
+          this.REMEMBER_ME = rememberMe;
           this.setAuthData(response.data.token, response.data.user);
-          if (rememberMe) {
-            localStorage.setItem(this.config.STORAGE_KEYS.REMEMBER_ME, 'true');
-          }
         }
       })
     );
@@ -81,7 +108,7 @@ export class AuthService {
     return this.api.get<any>(this.config.API_ENDPOINTS.USER_PROFILE, true).pipe(
       tap(response => {
         if (response.success) {
-          localStorage.setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
+          this.getStorage().setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
         } else {
           this.clearAuthData();
         }

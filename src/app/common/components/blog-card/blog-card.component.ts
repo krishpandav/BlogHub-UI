@@ -13,12 +13,18 @@ import { CommonModule } from '@angular/common';
 })
 export class BlogCardComponent {
   @Input() blog: any;
-
+  isLiked: boolean = false;
   constructor(
     private blogService: BlogService,
     public config: ConfigService,
     public auth: AuthService
-  ) {}
+  ) { }
+
+  ngOnInit(): void {
+    if (this.blog) {
+      this.isLiked = this.auth.getLikedUserBlog()?.includes(this.blog._id);
+    }
+  }
 
   toggleLike(): void {
     if (!this.auth.isAuthenticated()) {
@@ -26,14 +32,15 @@ export class BlogCardComponent {
       return;
     }
 
-    const isLiked = this.blog.likedByUser;
-    const apiCall = isLiked ? this.blogService.unlikeBlog(this.blog._id) : this.blogService.likeBlog(this.blog._id);
+    this.isLiked = this.auth.getLikedUserBlog().includes(this.blog._id);
+    const apiCall = this.isLiked ? this.blogService.unlikeBlog(this.blog._id) : this.blogService.likeBlog(this.blog._id);
 
     apiCall.subscribe({
       next: (res: any) => {
         if (res.success) {
           this.blog.likes = res.data.likes;
-          this.blog.likedByUser = !isLiked;
+          this.isLiked ? this.auth.unlikeBlog(this.blog._id) : this.auth.likeBlog(this.blog._id);
+          this.isLiked = !this.isLiked;
         }
       },
       error: (err) => console.error('Error updating like:', err)

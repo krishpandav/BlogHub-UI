@@ -42,6 +42,7 @@ export class BlogDetailComponent {
             if (res.success && res.data) {
               this.blog = res.data;
               this.title = `${this.blog.title} - BlogHub`;
+              this.isLiked = this.authService.getLikedUserBlog()?.includes(this.blog._id);
             } else {
               this.errorMessage = 'Blog not found';
             }
@@ -50,6 +51,8 @@ export class BlogDetailComponent {
             this.errorMessage = 'Error loading blog: ' + err.message;
           }
         });
+
+
       } catch (error: any) {
         this.errorMessage = 'Error loading blog: ' + error.message;
       } finally {
@@ -58,32 +61,26 @@ export class BlogDetailComponent {
     });
   }
 
-  // async handleLike() {
-  //   if (!this.authService.isAuthenticated()) {
-  //     this.showToast('Please login to like posts', 'error');
-  //     return;
-  //   }
-  //   if (!this.blog) return;
+  toggleLike(): void {
+    if (!this.authService.isAuthenticated()) {
+      alert('Please login to like posts'); // replace with toast if needed
+      return;
+    }
 
-  //   this.likeLoading = true;
-  //   try {
-  //     const response = this.isLiked
-  //       ? await firstValueFrom(this.blogService.unlikeBlog(this.blog._id))
-  //       : await firstValueFrom(this.blogService.likeBlog(this.blog._id));
-  //     if (response.success && response.data) {
-  //       this.blog = response.data;
-  //       this.blog.likes = response.data.likes;
-  //       this.isLiked = !this.isLiked;
-  //       this.showToast(this.isLiked ? 'Post liked' : 'Post unliked', 'success');
-  //     } else {
-  //       this.showToast('Error updating like', 'error');
-  //     }
-  //   } catch (error: any) {
-  //     this.showToast('Error updating like: ' + error.message, 'error');
-  //   } finally {
-  //     this.likeLoading = false;
-  //   }
-  // }
+    this.isLiked = this.authService.getLikedUserBlog().includes(this.blog._id);
+    const apiCall = this.isLiked ? this.blogService.unlikeBlog(this.blog._id) : this.blogService.likeBlog(this.blog._id);
+
+    apiCall.subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.blog.likes = res.data.likes;
+          this.isLiked ? this.authService.unlikeBlog(this.blog._id) : this.authService.likeBlog(this.blog._id);
+          this.isLiked = !this.isLiked;
+        }
+      },
+      error: (err) => console.error('Error updating like:', err)
+    });
+  }
 
   async shareBlog() {
     if (!this.blog) return;

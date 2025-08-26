@@ -5,21 +5,6 @@ import { AuthService } from '../../common/service/auth.service';
 import { UserService } from '../../common/service/user.service';
 import { ConfigService } from '../../common/service/config.service';
 
-interface User {
-  _id: string;
-  fullname: string;
-  username: string;
-  email: string;
-  bio?: string;
-  role: 'admin' | 'user';
-  status: 'active' | 'inactive';
-  created_at: string;
-  blogCount?: number;
-  likeCount?: number;
-  commentCount?: number;
-  followerCount?: number;
-}
-
 interface Blog {
   _id: string;
   title: string;
@@ -35,7 +20,7 @@ interface Blog {
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
-  user: User | null = null;
+  user: any | null = null;
   blogs: Blog[] = [];
   loading = false;
   errorMessage: string | null = null;

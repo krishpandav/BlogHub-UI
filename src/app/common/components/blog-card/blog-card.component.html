@@ -24,9 +24,9 @@
 
       <div class="d-flex align-items-center">
 
-        <button class="like-btn" (click)="toggleLike()">
-          <i [ngClass]="blog.likes ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
-          {{ blog.likes + (blog.likes ? 1 : 0) }}
+        <button [ngClass]="isLiked ? 'like-btn liked' : 'like-btn'" (click)="toggleLike()">
+          <i [ngClass]="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+          {{ blog.likes }}
         </button>
 
       </div>
