@@ -25,7 +25,7 @@ export class LoginComponent {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      rememberme: ['', Validators.required]
+      rememberme: ['', Validators.nullValidator]
     });
   }
 
@@ -33,6 +33,8 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
     this.successMessage = '';
+
+    debugger
 
     if (this.loginForm.valid) {
       console.log('Form Submitted:', this.loginForm.value);
@@ -42,21 +44,24 @@ export class LoginComponent {
         password: this.loginForm.value.password,
       }
 
-      
+
 
       const rememberMe = this.loginForm.value.rememberme || false;
-
       this.authService.login(data, rememberMe).subscribe({
         next: (res) => {
           this.loading = false;
+          if (res.success) {
+            this.successMessage = res.message || 'Registration successful!';
+            setTimeout(() => this.router.navigate(['/home']), 2000);
+          } else {
+            this.errorMessage = res.message || 'Registration failed. Please try again.';
+          }
           console.log('Registered successfully:', res)
-          this.successMessage = res.message || 'Registration successful!';
-          setTimeout(() => this.router.navigate(['/home']), 2000);
         },
         error: (err) => {
           this.loading = false;
           console.error('Registration failed:', err)
-          this.successMessage = err.message || 'Registration failed. Please try again.';
+          this.errorMessage = err?.error?.message || 'Login failed. Please try again.';
         }
       });
     }

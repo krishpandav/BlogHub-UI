@@ -134,18 +134,19 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Buttons */
 .btn-primary-custom {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
     color: white !important;
-    font-weight: 500;
-    padding: 0.5rem 1.5rem;
-    transition: all 0.3s ease;
+    font-weight: 500 !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.3s ease !important;
 }
 
 .btn-primary-custom:hover {
-    background-color: #34495e;
-    border-color: #34495e;
-    transform: translateY(-1px);
+    background-color: #34495e !important;
+    border-color: #34495e !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
 }
 
 .btn-secondary-custom {
