@@ -14,6 +14,8 @@ export class HeaderComponent implements OnInit {
   user: any = null;
   categories: any[] = [];
 
+  userFlag : boolean = false;
+
   constructor(
     private auth: AuthService,
     private blogService: BlogService
@@ -22,6 +24,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.isAuthenticated = this.auth.isAuthenticated();
     this.user = this.auth.getCurrentUser();
+    this.auth.validateToken();
     this.blogService.getCategories().subscribe({
       next: (res) => {
         this.categories = res.data || [];

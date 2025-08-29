@@ -5,8 +5,9 @@ import { BlogDetailComponent } from '../components/blog-detail/blog-detail.compo
 import { ProfileComponent } from '../components/profile/profile.component';
 import { MyProfileComponent } from '../components/my-profile/my-profile.component';
 import { MyBlogsComponent } from '../components/my-blogs/my-blogs.component';
+import { CreateBlogComponent } from '../components/create-blog/create-blog.component';
 
-export const childRoutes : Routes = [
+export const childRoutes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: BlogListComponent },
     { path: 'popular', component: PopularBlogsComponent },

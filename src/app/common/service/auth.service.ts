@@ -8,7 +8,6 @@ import { ApiService } from './api.service';
   providedIn: 'root'
 })
 export class AuthService {
-  private api!: ApiService; // Will be initialized lazily
   REMEMBER_ME: boolean = false;
 
   constructor(
@@ -16,13 +15,12 @@ export class AuthService {
     private config: ConfigService,
     private router: Router
   ) {
-    // Lazy inject ApiService to prevent circular dependency
-    setTimeout(() => {
-      this.api = this.injector.get(ApiService);
-    });
-
-    // Load REMEMBER_ME flag from localStorage (only localStorage, since it must survive reloads)
     this.REMEMBER_ME = JSON.parse(localStorage.getItem(this.config.STORAGE_KEYS.REMEMBER_ME) || 'false');
+  }
+
+  // lazy getter for ApiService (no circular dependency at DI time)
+  private get api(): ApiService {
+    return this.injector.get(ApiService);
   }
 
   private getStorage(): Storage {
@@ -88,6 +86,7 @@ export class AuthService {
     return this.api.post<any>(this.config.API_ENDPOINTS.USER_LOGIN, credentials).pipe(
       tap(response => {
         if (response.success) {
+          debugger
           this.REMEMBER_ME = rememberMe;
           this.setAuthData(response.data.token, response.data.user);
         }
@@ -105,12 +104,12 @@ export class AuthService {
   }
 
   validateToken(): Observable<any> {
+    debugger
     return this.api.get<any>(this.config.API_ENDPOINTS.USER_PROFILE, true).pipe(
       tap(response => {
-        if (response.success) {
-          this.getStorage().setItem(this.config.STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
-        } else {
-          this.clearAuthData();
+        debugger
+        if (!response.success) {
+          this.clearAuthData()
         }
       })
     );

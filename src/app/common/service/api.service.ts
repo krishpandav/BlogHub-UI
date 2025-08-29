@@ -28,6 +28,8 @@ export class ApiService {
   }
 
   get<T>(endpoint: string, requireAuth = false): Observable<T> {
+    console.log(this.getHeaders(requireAuth))
+    debugger
     return this.http.get<T>(
       this.config.API_BASE_URL + endpoint,
       { headers: this.getHeaders(requireAuth) }

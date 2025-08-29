@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" (click)="activeModal.close()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="profileForm" (ngSubmit)="activeModal.close(profileForm)">
+                    <div class="mb-3">
+                        <label for="profileName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="profileName" formControlName="fullname" required
+                            [ngClass]="{'is-invalid': profileForm.get('fullname')?.invalid && profileForm.get('fullname')?.touched}">
+                        @if (profileForm.get('fullname')?.invalid && profileForm.get('fullname')?.touched) {
+                        <div class="invalid-feedback">Full name is required.</div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="profileEmail" formControlName="email" required
+                            [ngClass]="{'is-invalid': profileForm.get('email')?.invalid && profileForm.get('email')?.touched}">
+                        @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileBio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="profileBio" rows="3" formControlName="bio"></textarea>
+                    </div>
+                    @if (formError) {
+                    <div class="alert alert-danger" role="alert">{{ formError }}</div>
+                    }
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="activeModal.close()">Cancel</button>
+                <button type="button" class="btn btn-primary"
+                    (click)="saveProfile()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

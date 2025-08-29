@@ -6,6 +6,9 @@ import { UserService } from '../../common/service/user.service';
 import { ConfigService } from '../../common/service/config.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BlogCardComponent } from '../../common/components/blog-card/blog-card.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 interface Blog {
   _id: string;
@@ -17,7 +20,7 @@ interface Blog {
 
 @Component({
   selector: 'app-my-profile',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, BlogCardComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, BlogCardComponent, MatTooltipModule, NgbModule],
   templateUrl: './my-profile.component.html',
   styleUrl: './my-profile.component.scss'
 })
@@ -26,27 +29,21 @@ export class MyProfileComponent implements OnInit {
   user: any | null = null;
   blogs: Blog[] = [];
   loading = false;
-  profileForm: FormGroup;
   errorMessage: string | null = null;
   isCurrentUser = false;
   formSubmitting = false;
-  formError: string | null = null;
   userInitial: string = 'U';
   likesCount: number = 0;
+  menuFlag: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
     private userService: UserService,
+    private modalservice: NgbModal,
     public confifg: ConfigService,
-    private fb: FormBuilder
   ) {
-    this.profileForm = this.fb.group({
-      fullname: ['', Validators.required],
-      // username: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      bio: ['']
-    });
+
   }
 
   ngOnInit(): void {
@@ -85,47 +82,28 @@ export class MyProfileComponent implements OnInit {
     });
   }
 
+  updateProfile() {
+    let modalData = this.modalservice.open(EditProfileComponent, {
+      size: 'md',
+      centered: true,
+      keyboard: false,
+      backdrop: 'static'
+    })
+
+    modalData.componentInstance.data = this.user;
+
+    modalData.result.then(user => {
+      if (user) {
+        console.log(user)
+        this.user = user;
+        this.userInitial = this.getuserInitial(user);
+      }
+    })
+  }
+
   getuserInitial(data: any): any {
     return (this.user?.fullname || this.user?.username || 'U').charAt(0).toUpperCase();
   }
 
-  setFormValues(user: any): void {
-    this.profileForm.patchValue({
-      name: user.name || '',
-      // username: user.username || '',
-      email: user.email || '',
-      bio: user.bio || ''
-    });
-  }
 
-  saveProfile(): void {
-    if (this.profileForm.invalid) {
-      this.profileForm.markAllAsTouched();
-      return;
-    }
-
-    this.formSubmitting = true;
-    this.formError = null;
-
-    const updatedData = this.profileForm.value;
-    this.userService.updateProfile(updatedData).subscribe({
-      next: (response) => {
-        this.authService.setAuthData(this.authService.getToken()!, response.data);
-        this.user = response.data;
-        this.userInitial = this.getuserInitial(response.data);
-        // this.toastService.show('Profile updated successfully', 'success');
-        this.formSubmitting = false;
-        const modal = document.getElementById('profileModal');
-        if (modal) {
-          const bsModal = (window as any).bootstrap.Modal.getInstance(modal);
-          bsModal?.hide();
-        }
-      },
-      error: (err) => {
-        this.formError = 'Failed to update profile: ' + err.message;
-        // this.toastService.show('Failed to update profile', 'error');
-        this.formSubmitting = false;
-      }
-    });
-  }
 }
