@@ -81,41 +81,41 @@ export class CreateBlogComponent implements OnInit {
     });
   }
 
-  // onFileChange(event: Event): void {
-  //   const input = event.target as HTMLInputElement;
-  //   if (input.files && input.files[0]) {
-  //     const file = input.files[0];
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       this.imagePreview = e.target?.result as string;
-  //       this.blogForm.patchValue({ image: this.imagePreview });
-  //     };
-  //     reader.onerror = () => {
-  //       this.showError('Error reading image file');
-  //     };
-  //     reader.readAsDataURL(file);
-  //   } else {
-  //     this.imagePreview = null;
-  //     this.blogForm.patchValue({ image: null });
-  //   }
-  // }
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      debugger
       const file = input.files[0];
-      const uniqueName = `${this.blogForm.get('title')?.value?.trim().toLowerCase()}_${Date.now()}_${file.name}`;
-
-      // Create preview URL (not base64)
-      this.imagePreview = URL.createObjectURL(file);
-
-      // Instead of saving file, just save "URL" + "filename"
-      this.blogForm.patchValue({ image: `/assets/images/${uniqueName}` });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = e.target?.result as string;
+        this.blogForm.patchValue({ image: this.imagePreview });
+      };
+      reader.onerror = () => {
+        this.showError('Error reading image file');
+      };
+      reader.readAsDataURL(file);
     } else {
       this.imagePreview = null;
       this.blogForm.patchValue({ image: null });
     }
   }
+  // onFileChange(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files[0]) {
+  //     debugger
+  //     const file = input.files[0];
+  //     const uniqueName = `${this.blogForm.get('title')?.value?.trim().toLowerCase()}_${Date.now()}_${file.name}`;
+
+  //     // Create preview URL (not base64)
+  //     this.imagePreview = URL.createObjectURL(file);
+
+  //     // Instead of saving file, just save "URL" + "filename"
+  //     this.blogForm.patchValue({ image: `/assets/images/${uniqueName}` });
+  //   } else {
+  //     this.imagePreview = null;
+  //     this.blogForm.patchValue({ image: null });
+  //   }
+  // }
 
 
   saveBlog(status: 'draft' | 'published'): void {

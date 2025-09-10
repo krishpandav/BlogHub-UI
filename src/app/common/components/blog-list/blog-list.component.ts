@@ -30,6 +30,7 @@ export class BlogListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    debugger;
     this.route.paramMap.subscribe(params => {
       const category = params.get('slug') || null;
       this.currentCategory = category;
