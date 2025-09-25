@@ -43,7 +43,7 @@ export class BlogService {
 
   // Update existing blog
   updateBlog(blogData: any): Observable<any> {
-    return this.api.put(`${this.config.API_ENDPOINTS.BLOG_UPDATE}/${blogData._id}`, blogData, true);
+    return this.api.put(`${this.config.API_ENDPOINTS.BLOG_UPDATE}`, blogData, true);
   }
 
   // Delete a blog

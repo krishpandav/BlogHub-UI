@@ -154,6 +154,12 @@ export class ConfigService {
       const url = new URL(window.location.href);
       url.searchParams.delete(name);
       window.history.pushState({}, '', url.toString());
-    }
+    },
+
+    // correcttext: (text: any) => {
+    //   if (!text) return '';
+    //   return text.replace(/(\r\n|\n|\r)/g, '</p><br><p clas="mb-0 fw-normal">');
+    // }
+
   };
 }

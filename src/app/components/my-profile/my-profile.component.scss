@@ -25,3 +25,9 @@
     border-top-color: #1a1a1a !important;
     /* arrow matches background */
 }
+
+@media (min-width: 1025px) {
+    .custom-dropdown {
+        margin-left: 105px !important;
+    }
+}

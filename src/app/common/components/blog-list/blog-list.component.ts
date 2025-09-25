@@ -34,6 +34,7 @@ export class BlogListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const category = params.get('slug') || null;
       this.currentCategory = category;
+      this.loadBlogs(this.currentPage);
     });
 
     this.route.queryParams.subscribe(params => {
@@ -41,6 +42,7 @@ export class BlogListComponent implements OnInit {
       const page = +params['page'] || 1;
       this.searchtext = search;
       this.currentPage = page;
+      this.loadBlogs(this.currentPage);
     });
 
     this.loadBlogs(this.currentPage);
@@ -52,7 +54,7 @@ export class BlogListComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
     this.currentPage = page;
-    
+
 
     if (this.currentCategory) {
       this.blogService.getBlogsByCategory(this.currentCategory, page)

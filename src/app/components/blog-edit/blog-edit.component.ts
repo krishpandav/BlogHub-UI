@@ -5,7 +5,7 @@ import { FooterComponent } from '../../common/components/footer/footer.component
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BlogService } from '../../common/service/blog.service';
 import { AuthService } from '../../common/service/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Modal } from 'bootstrap';
 
 interface Category {
@@ -14,6 +14,7 @@ interface Category {
 }
 
 interface BlogData {
+  id?: string;
   title: string;
   category: string;
   content: string;
@@ -25,13 +26,13 @@ interface BlogData {
 }
 
 @Component({
-  selector: 'app-create-blog',
+  selector: 'app-edit-blog',
   imports: [CommonModule, HeaderComponent, FooterComponent, ReactiveFormsModule],
-  templateUrl: './create-blog.component.html',
-  styleUrl: './create-blog.component.scss'
+  templateUrl: './blog-edit.component.html',
+  styleUrls: ['./blog-edit.component.scss']
 })
 
-export class CreateBlogComponent implements OnInit {
+export class BlogEditComponent implements OnInit {
   blogForm: FormGroup;
   categories: Category[] = [];
   isLoading = false;
@@ -40,12 +41,14 @@ export class CreateBlogComponent implements OnInit {
   imagePreview: string | null = null;
   previewData: BlogData | null = null;
   currentDate: string = new Date().toLocaleDateString();
+  blogId: string = '';
 
   constructor(
     private fb: FormBuilder,
     private blogService: BlogService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.blogForm = this.fb.group({
       title: ['', Validators.required],
@@ -62,20 +65,47 @@ export class CreateBlogComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    this.blogId = this.route.snapshot.paramMap.get('id') || '';
     this.loadCategories();
+    if (this.blogId) {
+      this.loadBlog(this.blogId);
+    }
   }
 
   loadCategories(): void {
-    this.isLoading = true;
     this.blogService.getCategories().subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.categories = response.data;
         }
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading categories:', error);
+      }
+    });
+  }
+
+  loadBlog(id: string): void {
+    this.isLoading = true;
+    this.blogService.getBlogById(id).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const blog = response.data;
+          this.blogForm.patchValue({
+            title: blog.title,
+            category: blog.category,
+            content: blog.content,
+            summary: blog.summary,
+            tags: blog.tags.join(', '),
+            image: blog.image
+          });
+          this.imagePreview = blog.image || null;
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.showError('Error loading blog: ' + error.message);
         this.isLoading = false;
       }
     });
@@ -90,9 +120,7 @@ export class CreateBlogComponent implements OnInit {
         this.imagePreview = e.target?.result as string;
         this.blogForm.patchValue({ image: this.imagePreview });
       };
-      reader.onerror = () => {
-        this.showError('Error reading image file');
-      };
+      reader.onerror = () => this.showError('Error reading image file');
       reader.readAsDataURL(file);
     } else {
       this.imagePreview = null;
@@ -100,37 +128,35 @@ export class CreateBlogComponent implements OnInit {
     }
   }
 
-
   saveBlog(status: 'draft' | 'published'): void {
     if (this.blogForm.invalid) {
       this.showError('Please fill in all required fields');
       return;
     }
 
-    const blogData: BlogData = this.getBlogData();
+    const blogData = this.getBlogData();
     blogData.status = status;
 
     this.isLoading = true;
-    this.blogService.createBlog(blogData).subscribe({
+    this.blogService.updateBlog(blogData).subscribe({
       next: (response) => {
         if (response.success) {
-          this.showSuccess(status === 'draft' ? 'Draft saved successfully' : 'Blog published successfully');
-          setTimeout(() => {
-            this.router.navigate(['/my-profile']);
-          }, 2000);
+          this.showSuccess(status === 'draft' ? 'Draft saved successfully' : 'Blog updated successfully');
+          setTimeout(() => this.router.navigate(['/profile']), 2000);
         } else {
           this.showError('Error saving blog: ' + response.message);
         }
         this.isLoading = false;
       },
       error: (error) => {
-        this.showError('Error saving blog: ' + error.message);
+        debugger
+        this.showError('Error saving blog: ' + error.error.message);
         this.isLoading = false;
       }
     });
   }
 
-  publishBlog(): void {
+  updateBlog(): void {
     this.saveBlog('published');
   }
 
@@ -145,11 +171,12 @@ export class CreateBlogComponent implements OnInit {
 
   private getBlogData(): BlogData {
     const tags = this.blogForm.get('tags')?.value?.trim();
-    const tagsArray = tags ? tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : [];
+    const tagsArray = tags ? tags.split(',').map((tag: string) => tag.trim()).filter(tag => tag) : [];
 
     return {
+      id: this.blogId,
       title: this.blogForm.get('title')?.value?.trim(),
-      category: this.blogForm.get('category')?.value,
+      category: this.blogForm.get('category')?.value._id,
       content: this.blogForm.get('content')?.value?.trim(),
       summary: this.blogForm.get('summary')?.value?.trim(),
       tags: tagsArray,
@@ -165,19 +192,5 @@ export class CreateBlogComponent implements OnInit {
   private showSuccess(message: string): void {
     this.successMessage = message;
     this.errorMessage = null;
-  }
-}
-
-// Custom pipe for converting newlines to <br>
-import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-
-@Pipe({ name: 'newlineToBr' })
-export class NewlineToBrPipe implements PipeTransform {
-  constructor(private sanitizer: DomSanitizer) { }
-
-  transform(value: string): SafeHtml {
-    if (!value) return '';
-    return this.sanitizer.bypassSecurityTrustHtml(value.replace(/\n/g, '<br>'));
   }
 }

@@ -68,8 +68,10 @@ export class BlogDetailComponent {
     }
 
     this.isLiked = this.authService.getLikedUserBlog().includes(this.blog._id);
-    const apiCall = this.isLiked ? this.blogService.unlikeBlog(this.blog._id) : this.blogService.likeBlog(this.blog._id);
-
+    const apiCall = this.isLiked
+      ? this.blogService.unlikeBlog(this.blog._id)
+      : this.blogService.likeBlog(this.blog._id);
+    
     apiCall.subscribe({
       next: (res: any) => {
         if (res.success) {
@@ -78,9 +80,18 @@ export class BlogDetailComponent {
           this.isLiked = !this.isLiked;
         }
       },
-      error: (err) => console.error('Error updating like:', err)
+      error: (err) => {
+        console.error('Error updating like:', err);
+
+        // If status is 401, log out the user
+        if (err.status === 401) {
+          this.authService.logout();
+          alert('Session expired. Please login again.');
+        }
+      }
     });
   }
+
 
   async shareBlog() {
     if (!this.blog) return;

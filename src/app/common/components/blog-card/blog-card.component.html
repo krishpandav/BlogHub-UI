@@ -4,10 +4,31 @@
   }
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-start mb-2">
-      <h2 class="blog-title">
+      @if(isEdit){
+      <div class="d-flex flex-row">
+        <h2 class="blog-title me-2">
+          <a [routerLink]="['/blog', blog._id]">{{ blog.title }}</a>
+        </h2>
+        <span class="blog-category">{{ blog.category.name || blog.category }}</span>
+      </div>
+      <div class="dropdown">
+        <i class="fa-regular fa-pen-to-square dropdown-toggle" type="button" data-bs-toggle="dropdown"></i>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" [routerLink]="['/blog-edit', blog._id]">Edit</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item text-danger" (click)="deleteBlog(blog._id)">Delete</a></li>
+        </ul>
+      </div>
+      }
+      @else{
+      <h2 class="blog-title me-2">
         <a [routerLink]="['/blog', blog._id]">{{ blog.title }}</a>
       </h2>
       <span class="blog-category">{{ blog.category.name || blog.category }}</span>
+      }
+
     </div>
     <div class="blog-meta">
       <span>By <a [routerLink]="['/profile', blog.author._id]" class="text-decoration-none">

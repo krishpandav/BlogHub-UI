@@ -9,6 +9,8 @@ import { BlogCardComponent } from '../../common/components/blog-card/blog-card.c
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
+import { HeaderComponent } from "../../common/components/header/header.component";
+import { FooterComponent } from '../../common/components/footer/footer.component';
 
 interface Blog {
   _id: string;
@@ -20,7 +22,7 @@ interface Blog {
 
 @Component({
   selector: 'app-my-profile',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, BlogCardComponent, MatTooltipModule, NgbModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, BlogCardComponent, MatTooltipModule, NgbModule, HeaderComponent, FooterComponent],
   templateUrl: './my-profile.component.html',
   styleUrl: './my-profile.component.scss'
 })
@@ -28,12 +30,14 @@ interface Blog {
 export class MyProfileComponent implements OnInit {
   user: any | null = null;
   blogs: Blog[] = [];
+  likedBlogs: Blog[] = [];
   loading = false;
   errorMessage: string | null = null;
   isCurrentUser = false;
   formSubmitting = false;
   userInitial: string = 'U';
   likesCount: number = 0;
+  viewsCount: number = 0;
   menuFlag: boolean = false;
 
   constructor(
@@ -71,13 +75,35 @@ export class MyProfileComponent implements OnInit {
   private loadUserBlogs(): void {
     this.userService.getMyBlogs().subscribe({
       next: (res: any) => {
-        debugger
         if (res.success && res.data.blogs) {
           this.blogs = res.data.blogs;
+          this.viewsCount = this.blogs.reduce((sum, blog) => sum + blog.views, 0);
         }
       },
       error: (error) => {
         console.error('Error loading user blogs:', error);
+        // If server returns 401, logout user
+        if (error.status === 401) {
+          this.authService.logout();
+          window.location.href = '/home';
+        }
+      }
+    });
+
+    this.userService.getLikedBlogs().subscribe({
+      next: (res: any) => {
+        debugger
+        if (res.success && res.data.blogs) {
+          this.likedBlogs = res.data.blogs;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading user blogs:', error);
+        // If server returns 401, logout user
+        if (error.status === 401) {
+          this.authService.logout();
+          window.location.href = '/home';
+        }
       }
     });
   }
