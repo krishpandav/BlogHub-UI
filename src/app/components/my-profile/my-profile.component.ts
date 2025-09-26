@@ -65,8 +65,11 @@ export class MyProfileComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.loading = false;
         console.error('getProfile failed:', err)
+        if (err.status === 401) {
+          this.authService.logout();
+        }
+        this.loading = false;
         this.errorMessage = err.message || 'Please try again.';
       }
     });
@@ -85,7 +88,6 @@ export class MyProfileComponent implements OnInit {
         // If server returns 401, logout user
         if (error.status === 401) {
           this.authService.logout();
-          window.location.href = '/home';
         }
       }
     });
@@ -102,7 +104,6 @@ export class MyProfileComponent implements OnInit {
         // If server returns 401, logout user
         if (error.status === 401) {
           this.authService.logout();
-          window.location.href = '/home';
         }
       }
     });

@@ -82,6 +82,10 @@ export class BlogEditComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading categories:', error);
+
+        if (error.status === 401) {
+          this.authService.logout();
+        }
       }
     });
   }
@@ -105,8 +109,13 @@ export class BlogEditComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
+        console.error('Error loading blog:', error);
         this.showError('Error loading blog: ' + error.message);
         this.isLoading = false;
+
+        if (error.status === 401) {
+          this.authService.logout();
+        }
       }
     });
   }
@@ -149,9 +158,13 @@ export class BlogEditComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        debugger
+        console.error('Error saving blog:', error);
         this.showError('Error saving blog: ' + error.error.message);
         this.isLoading = false;
+
+        if (error.status === 401) {
+          this.authService.logout();
+        }
       }
     });
   }

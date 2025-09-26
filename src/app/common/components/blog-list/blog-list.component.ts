@@ -69,7 +69,11 @@ export class BlogListComponent implements OnInit {
             this.loading = false;
           },
           error: (err) => {
-            this.errorMessage = 'Error loading blogs: ' + err.message;
+            // If server returns 401, logout user
+            if (err.status === 401) {
+              return  this.auth.logout();
+            }
+            this.errorMessage = err.message;
             this.loading = false;
           }
         });
@@ -86,7 +90,11 @@ export class BlogListComponent implements OnInit {
             this.loading = false;
           },
           error: (err) => {
-            this.errorMessage = 'Error loading blogs: ' + err.message;
+            // If server returns 401, logout user
+            if (err.status === 401) {
+              return  this.auth.logout();
+            }
+            this.errorMessage = err.message;
             this.loading = false;
           }
         });
@@ -98,7 +106,13 @@ export class BlogListComponent implements OnInit {
       next: (res: any) => {
         if (res.success) this.popularBlogs = res.data;
       },
-      error: (err) => console.error('Error loading popular posts:', err)
+      error: (err) => {
+        // If server returns 401, logout user
+        if (err.status === 401) {
+          return  this.auth.logout();
+        }
+        console.error('Error loading popular posts:', err)
+      }
     });
   }
 
@@ -107,7 +121,13 @@ export class BlogListComponent implements OnInit {
       next: (res: any) => {
         if (res.success) this.categories = res.data;
       },
-      error: (err) => console.error('Error loading categories:', err)
+      error: (err) => {
+        // If server returns 401, logout user
+        if (err.status === 401) {
+          return  this.auth.logout();
+        }
+        console.error('Error loading categories:', err)
+      }
     });
   }
 

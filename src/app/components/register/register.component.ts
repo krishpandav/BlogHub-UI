@@ -55,7 +55,7 @@ export class RegisterComponent {
         },
         error: (err) => {
           console.error('Registration failed:', err)
-          this.successMessage = err.message || 'Registration failed. Please try again.';
+          this.errorMessage = err.message || 'Registration failed. Please try again.';
         }
       });
     }

@@ -53,7 +53,6 @@ export class BlogCardComponent {
         // If server returns 401, logout user
         if (err.status === 401) {
           this.auth.logout();
-          window.location.href = '/home';
         }
       }
     });
@@ -73,6 +72,7 @@ export class BlogCardComponent {
         error: (err) => {
           console.error('Error deleting blog', err);
 
+          // If server returns 401, logout user
           if (err.status === 401) {
             this.auth.logout();
           }

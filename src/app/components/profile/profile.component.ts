@@ -57,9 +57,11 @@ export class ProfileComponent implements OnInit {
           this.loading = false;
         },
         error: (err) => {
-          this.loading = false;
           console.error('Registration failed:', err)
-          // this.successMessage = err.message || 'Registration failed. Please try again.';
+          this.loading = false;
+          if (err.status === 401) {
+            return  this.authService.logout();
+          }
         }
       });
     });
@@ -74,6 +76,10 @@ export class ProfileComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading user blogs:', error);
+        // If server returns 401, logout user
+        if (error.status === 401) {
+          return  this.authService.logout();
+        }
       }
     });
   }

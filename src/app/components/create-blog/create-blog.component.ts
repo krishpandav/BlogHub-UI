@@ -77,6 +77,10 @@ export class CreateBlogComponent implements OnInit {
       error: (error) => {
         console.error('Error loading categories:', error);
         this.isLoading = false;
+
+        if (error.status === 401) {
+          this.authService.logout();
+        }
       }
     });
   }
@@ -124,8 +128,13 @@ export class CreateBlogComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
+        console.error('Error saving blog:', error);
         this.showError('Error saving blog: ' + error.message);
         this.isLoading = false;
+
+        if (error.status === 401) {
+          this.authService.logout();
+        }
       }
     });
   }
