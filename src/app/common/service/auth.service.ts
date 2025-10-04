@@ -86,7 +86,6 @@ export class AuthService {
     return this.api.post<any>(this.config.API_ENDPOINTS.USER_LOGIN, credentials).pipe(
       tap(response => {
         if (response.success) {
-          debugger
           this.REMEMBER_ME = rememberMe;
           this.setAuthData(response.data.token, response.data.user);
         }
@@ -104,10 +103,8 @@ export class AuthService {
   }
 
   validateToken(): Observable<any> {
-    debugger
     return this.api.get<any>(this.config.API_ENDPOINTS.USER_PROFILE, true).pipe(
-      tap(response => {
-        debugger
+      tap(response => {        
         if (!response.success) {
           this.clearAuthData()
         }

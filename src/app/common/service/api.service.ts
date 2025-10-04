@@ -12,7 +12,7 @@ export class ApiService {
     private http: HttpClient,
     private config: ConfigService,
     private auth: AuthService
-  ) {}
+  ) { }
 
   private getHeaders(requireAuth: boolean = false): HttpHeaders {
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -28,8 +28,6 @@ export class ApiService {
   }
 
   get<T>(endpoint: string, requireAuth = false): Observable<T> {
-    console.log(this.getHeaders(requireAuth))
-    debugger
     return this.http.get<T>(
       this.config.API_BASE_URL + endpoint,
       { headers: this.getHeaders(requireAuth) }

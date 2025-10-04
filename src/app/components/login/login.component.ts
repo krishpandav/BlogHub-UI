@@ -33,8 +33,7 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
     this.successMessage = '';
-
-    debugger
+    
 
     if (this.loginForm.valid) {
       console.log('Form Submitted:', this.loginForm.value);
