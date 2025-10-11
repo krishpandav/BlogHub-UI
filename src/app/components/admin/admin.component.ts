@@ -3,14 +3,17 @@ import { HeaderComponent } from '../../common/components/header/header.component
 import { FooterComponent } from '../../common/components/footer/footer.component';
 import { AdminService } from '../../common/service/admin.service';
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../common/service/auth.service';
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { BlogService } from '../../common/service/blog.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
-  imports: [HeaderComponent, FooterComponent, TitleCasePipe, RouterLink, CommonModule, NgbModule],
+  imports: [HeaderComponent, FooterComponent, TitleCasePipe, RouterLink, CommonModule, NgbModule, ReactiveFormsModule, FormsModule, HttpClientModule
+  ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -20,12 +23,16 @@ export class AdminComponent {
   recentBlogs: any[] = [];
   blogs: any[] = [];
   topBlogs: any[] = [];
+  categoryForm!: FormGroup;
+  categories: any[] = [];
   loading = true;
   errorMessage: any = ""
   successMessage: any = ""
 
   constructor(
     private adminService: AdminService,
+    private blogService: BlogService,
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) { }
@@ -33,6 +40,11 @@ export class AdminComponent {
   ngOnInit(): void {
     this.loadDashboard();
     this.loadBlogs();
+    this.categoryForm = this.fb.group({
+      name: ['', Validators.required],
+      description: ['']
+    });
+    this.getCategories();
   }
 
   loadDashboard(): void {
@@ -106,5 +118,73 @@ export class AdminComponent {
         setTimeout(() => (this.errorMessage = ''), 3000);
       }
     });
+  }
+
+  getCategories() {
+    this.adminService.getCategories().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.categories = response.data;
+        }
+      },
+      error: (err) => console.error('Error loading categories', err)
+    });
+  }
+
+  addCategory() {
+    if (this.categoryForm.valid) {
+      this.adminService.createCategory(this.categoryForm.value).subscribe({
+        next: (data) => {
+          if (data.success) {
+            this.categoryForm.reset();
+            // ✅ Optionally reset validation state (optional but clean)
+            this.categoryForm.markAsPristine();
+            this.categoryForm.markAsUntouched();
+            this.successMessage = data.message || 'Category created successfully!';
+            this.getCategories();
+            setTimeout(() => (this.successMessage = ''), 2000);
+          }
+        },
+        error: (err) => {
+          console.error('Error updating category', err);
+          this.errorMessage = err.error.message || err.message;
+          setTimeout(() => (this.errorMessage = ''), 2000);
+        }
+      });
+    }
+  }
+
+  updateCategory(category: any) {
+    debugger
+    this.adminService.updateCategory(category).subscribe({
+      next: (data) => {
+        if (data.success) {
+          this.successMessage = data.message || 'Category updated successfully!';
+          this.getCategories();
+          setTimeout(() => (this.successMessage = ''), 2000);
+        }
+      },
+      error: (err) => {
+        console.error('Error updating category', err);
+        this.errorMessage = err.error.message || err.message;
+        setTimeout(() => (this.errorMessage = ''), 2000);
+      }
+    });
+  }
+
+  deleteCategory(id: string) {
+    if (confirm('Are you sure? This will delete all blogs in this category!')) {
+      this.adminService.deleteCategory(id).subscribe({
+        next: () => {
+          alert('Category deleted successfully!');
+          this.getCategories();
+        },
+        error: (err) => {
+          console.error('Error updating category', err);
+          this.errorMessage = err.error.message || err.message;
+          setTimeout(() => (this.errorMessage = ''), 2000);
+        }
+      });
+    }
   }
 }

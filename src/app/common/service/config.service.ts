@@ -33,6 +33,7 @@ export class ConfigService {
     ADMIN_BLOGS: '/api/admin/blogs',
     ADMIN_BLOG_STATUS: '/api/admin/blog/status',
     ADMIN_BLOG_DELETE: '/api/admin/blog',
+    ADMIN_CATEGORY_GET: '/api/admin/category',
     ADMIN_CATEGORY_CREATE: '/api/admin/category',
     ADMIN_CATEGORY_UPDATE: '/api/admin/category',
     ADMIN_CATEGORY_DELETE: '/api/admin/category'

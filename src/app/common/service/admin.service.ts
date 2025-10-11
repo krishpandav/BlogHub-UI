@@ -48,8 +48,12 @@ export class AdminService {
         return this.api.post(this.config.API_ENDPOINTS.ADMIN_CATEGORY_CREATE, payload, true);
     }
 
-    updateCategory(categoryId: string, payload: { name: string }): Observable<any> {
-        return this.api.put(`${this.config.API_ENDPOINTS.ADMIN_CATEGORY_UPDATE}/${categoryId}`, payload, true);
+    getCategories(): Observable<any> {
+        return this.api.get(this.config.API_ENDPOINTS.ADMIN_CATEGORY_GET, true);
+    }
+
+    updateCategory(payload: { name: string }): Observable<any> {
+        return this.api.put(`${this.config.API_ENDPOINTS.ADMIN_CATEGORY_UPDATE}`, payload, true);
     }
 
     deleteCategory(categoryId: string): Observable<any> {
