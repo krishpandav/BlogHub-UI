@@ -94,7 +94,7 @@ export class MyProfileComponent implements OnInit {
 
     this.userService.getLikedBlogs().subscribe({
       next: (res: any) => {
-        debugger
+        
         if (res.success && res.data.blogs) {
           this.likedBlogs = res.data.blogs;
         }

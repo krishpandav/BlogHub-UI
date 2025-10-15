@@ -22,6 +22,7 @@ export class AdminComponent {
   recentUsers: any[] = [];
   recentBlogs: any[] = [];
   blogs: any[] = [];
+  users: any[] = [];
   topBlogs: any[] = [];
   categoryForm!: FormGroup;
   categories: any[] = [];
@@ -45,6 +46,7 @@ export class AdminComponent {
       description: ['']
     });
     this.getCategories();
+    this.getUsers();
   }
 
   loadDashboard(): void {
@@ -52,7 +54,7 @@ export class AdminComponent {
 
     this.adminService.getDashboard().subscribe({
       next: (res) => {
-        debugger
+
         if (res.success) {
           this.stats = res?.data.stats || {};
           this.recentUsers = res?.data.recentUsers || {};
@@ -90,7 +92,7 @@ export class AdminComponent {
   }
 
   updateStatus(blogId: string, status: string): void {
-    debugger
+
     this.adminService.updateBlogStatus(blogId, status as any).subscribe({
       next: () => {
         this.successMessage = 'Blog status updated successfully';
@@ -155,7 +157,7 @@ export class AdminComponent {
   }
 
   updateCategory(category: any) {
-    debugger
+
     this.adminService.updateCategory(category).subscribe({
       next: (data) => {
         if (data.success) {
@@ -176,12 +178,67 @@ export class AdminComponent {
     if (confirm('Are you sure? This will delete all blogs in this category!')) {
       this.adminService.deleteCategory(id).subscribe({
         next: () => {
-          alert('Category deleted successfully!');
+          this.successMessage = 'Category deleted successfully!';
+          setTimeout(() => (this.successMessage = ''), 2000);
           this.getCategories();
         },
         error: (err) => {
           console.error('Error updating category', err);
           this.errorMessage = err.error.message || err.message;
+          setTimeout(() => (this.errorMessage = ''), 2000);
+        }
+      });
+    }
+  }
+
+  getUsers() {
+    this.adminService.getUsers().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.users = res.data.users || [];
+        }
+      },
+      error: (err) => {
+        console.error('Error updating category', err);
+        this.errorMessage = err.error.message || 'Failed to load users.';
+        setTimeout(() => (this.errorMessage = ''), 2000);
+      }
+    });
+  }
+
+  updateUser(user: any) {
+    this.adminService.updateUser(user._id, {
+      role: user.role,
+      isActive: user.isActive
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.successMessage = res.message || 'User updated successfully!';
+          setTimeout(() => (this.successMessage = ''), 2000);
+        }
+      },
+      error: (err) => {
+        console.error('Error updating user:', err);
+        this.errorMessage = err.error?.message || 'Failed to update user.';
+        setTimeout(() => (this.errorMessage = ''), 2000);
+      }
+    });
+  }
+
+  deleteUser(id: string) {
+    if (confirm('Are you sure to delete user? This will delete all blogs by this user!')) {
+      this.adminService.deleteUser(id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.successMessage = res.message || 'User deleted successfully!';
+            this.getUsers();
+            this.loadDashboard();
+            setTimeout(() => (this.successMessage = ''), 2000);
+          }
+        },
+        error: (err) => {
+          console.error('Error deleting user:', err);
+          this.errorMessage = err.error?.message || 'Failed to delete user.';
           setTimeout(() => (this.errorMessage = ''), 2000);
         }
       });

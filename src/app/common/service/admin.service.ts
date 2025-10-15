@@ -20,8 +20,8 @@ export class AdminService {
         return this.api.get(this.config.API_ENDPOINTS.ADMIN_USERS, true);
     }
 
-    updateUserStatus(userId: string, status: 'active' | 'blocked'): Observable<any> {
-        return this.api.put(`${this.config.API_ENDPOINTS.ADMIN_USER_STATUS}/${userId}`, { status }, true);
+    updateUser(userId: string, payload: object): Observable<any> {
+        return this.api.put(`${this.config.API_ENDPOINTS.ADMIN_USER_UDATE}/${userId}`, payload, true);
     }
 
     deleteUser(userId: string): Observable<any> {

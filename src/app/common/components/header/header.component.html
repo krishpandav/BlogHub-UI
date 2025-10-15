@@ -33,7 +33,7 @@
                         }
                     </ul>
                 </li>
-                @if (user.role === 'admin') {
+                @if (user && user?.role === 'admin') {
                 <li class="nav-item">
                     <a class="nav-link" [routerLink]="['/admin']" routerLinkActive="active">Admin</a>
                 </li>

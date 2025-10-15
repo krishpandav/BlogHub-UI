@@ -206,104 +206,56 @@
                             <!-- Success / Error Alerts -->
                             <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
                             <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content mt-3">
-                <div class="tab-pane fade" id="manage-categories" role="tabpanel">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h2>Manage Category</h2>
-
-                            <!-- Success / Error Alerts -->
-                            <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
-                            <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5>Add New Category</h5>
-                                </div>
-                                <div class="card-body">
-                                    <form (ngSubmit)="addCategory()" [formGroup]="categoryForm">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Category Name</label>
-                                                    <input type="text" class="form-control" formControlName="name"
-                                                        required />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Description</label>
-                                                    <input type="text" class="form-control"
-                                                        formControlName="description" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="mb-3">
-                                                    <label class="form-label">&nbsp;</label>
-                                                    <button type="submit" class="btn btn-primary-custom w-100"
-                                                        [disabled]="categoryForm.invalid">
-                                                        Add
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <!-- Categories Table -->
+                            <!-- Users Table -->
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>All Categories</h5>
+                                    <h5>All Users</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-striped">
-                                            <thead>
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-light">
                                                 <tr>
                                                     <th>No</th>
                                                     <th>ID</th>
-                                                    <th>Name</th>
-                                                    <th>Slug</th>
-                                                    <th>Description</th>
+                                                    <th>Username</th>
+                                                    <th>Full Name</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
                                                     <th>Status</th>
+                                                    <th>Joined</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let category of categories ; let i = index">
-                                                    <td>{{i+1}}</td>
-                                                    <td>{{ category._id }}</td>
+                                                <tr *ngFor="let user of users; let i = index">
+                                                    <td>{{ i+1 }}</td>
+                                                    <td>{{ user._id }}</td>
+                                                    <td>{{ user.username }}</td>
+                                                    <td>{{ user.fullname }}</td>
+                                                    <td>{{ user.email }}</td>
                                                     <td>
-                                                        <input type="text" class="form-control form-control-sm"
-                                                            [(ngModel)]="category.name" />
-                                                    </td>
-                                                    <td>{{ category.slug }}</td>
-                                                    <td>
-                                                        <input type="text" class="form-control form-control-sm"
-                                                            [(ngModel)]="category.description" />
+                                                        <select [(ngModel)]="user.role"
+                                                            class="form-select form-select-sm">
+                                                            <option value="user">User</option>
+                                                            <option value="admin">Admin</option>
+                                                        </select>
                                                     </td>
                                                     <td>
                                                         <div class="form-check form-switch">
                                                             <input class="form-check-input" type="checkbox"
-                                                                [(ngModel)]="category.isActive" />
+                                                                [(ngModel)]="user.isActive" />
                                                         </div>
                                                     </td>
+                                                    <td>{{ user.created_at | date: 'mediumDate' }}</td>
                                                     <td>
                                                         <div class="btn-group btn-group-sm">
-                                                            <button class="btn btn-primary"
-                                                                (click)="updateCategory(category)">
+                                                            <button class="btn btn-primary" (click)="updateUser(user)">
                                                                 Save
                                                             </button>
+
                                                             <button class="btn btn-danger"
-                                                                (click)="deleteCategory(category._id)">
+                                                                (click)="deleteUser(user._id)">
                                                                 Delete
                                                             </button>
                                                         </div>
@@ -314,12 +266,117 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- <div class="tab-content mt-3">
+
+                <div class="tab-content mt-3">
+                    <div class="tab-pane fade" id="manage-categories" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2>Manage Category</h2>
+
+                                <!-- Success / Error Alerts -->
+                                <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+                                <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5>Add New Category</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form (ngSubmit)="addCategory()" [formGroup]="categoryForm">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Category Name</label>
+                                                        <input type="text" class="form-control" formControlName="name"
+                                                            required />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Description</label>
+                                                        <input type="text" class="form-control"
+                                                            formControlName="description" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">&nbsp;</label>
+                                                        <button type="submit" class="btn btn-primary-custom w-100"
+                                                            [disabled]="categoryForm.invalid">
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Categories Table -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>All Categories</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>ID</th>
+                                                        <th>Name</th>
+                                                        <th>Slug</th>
+                                                        <th>Description</th>
+                                                        <th>Status</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let category of categories ; let i = index">
+                                                        <td>{{i+1}}</td>
+                                                        <td>{{ category._id }}</td>
+                                                        <td>
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                [(ngModel)]="category.name" />
+                                                        </td>
+                                                        <td>{{ category.slug }}</td>
+                                                        <td>
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                [(ngModel)]="category.description" />
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    [(ngModel)]="category.isActive" />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-sm">
+                                                                <button class="btn btn-primary"
+                                                                    (click)="updateCategory(category)">
+                                                                    Save
+                                                                </button>
+                                                                <button class="btn btn-danger"
+                                                                    (click)="deleteCategory(category._id)">
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="tab-content mt-3">
                 <div class="tab-pane fade" id="manage-users" role="tabpanel">
                     <div class="row">
                         @for (blog of blogs; track blog._id) {
@@ -338,7 +395,7 @@
                 </div>
             </div> -->
 
-            <div class="card mt-4">
+                <!-- <div class="card mt-4">
                 <div class="card-header">
                     <h5>Quick Actions</h5>
                 </div>
@@ -349,16 +406,16 @@
                         <a routerLink="/admin/users" class="btn btn-outline-primary">Manage Users</a>
                     </div>
                 </div>
+            </div> -->
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
         </div>
     </div>
 
-    <!-- Loading Spinner -->
-    <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-</div>
-
-<app-footer></app-footer>
+    <app-footer></app-footer>

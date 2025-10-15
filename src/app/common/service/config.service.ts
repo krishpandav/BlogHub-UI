@@ -28,7 +28,7 @@ export class ConfigService {
     BLOG_UNLIKE: '/api/blog',
     ADMIN_DASHBOARD: '/api/admin/dashboard',
     ADMIN_USERS: '/api/admin/users',
-    ADMIN_USER_STATUS: '/api/admin/user/status',
+    ADMIN_USER_UDATE: '/api/admin/user',
     ADMIN_USER_DELETE: '/api/admin/user',
     ADMIN_BLOGS: '/api/admin/blogs',
     ADMIN_BLOG_STATUS: '/api/admin/blog/status',
