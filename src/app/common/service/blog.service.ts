@@ -13,7 +13,7 @@ export class BlogService {
   ) { }
 
   // Get all blogs with optional page, category, and search
-  getBlogs(page: number = 1, category?: string, search?: string): Observable<any> {
+  getBlogs(page: number = 1, search?: string, category?: string): Observable<any> {
     let endpoint = `${this.config.API_ENDPOINTS.BLOGS_ALL}?page=${page}`;
     if (search) endpoint += `&searchtext=${search}`;
     return this.api.get(endpoint);
