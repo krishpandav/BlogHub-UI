@@ -84,8 +84,9 @@ export class AdminComponent {
         this.blogs = res?.data?.blogs || res?.data || [];
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Failed to load blogs';
+      error: (err) => {
+        console.error('Error loading blogs:', err);
+        this.errorMessage = err.error.message || 'Failed to load blogs';
         this.loading = false;
       }
     });
@@ -99,8 +100,9 @@ export class AdminComponent {
         this.loadBlogs();
         setTimeout(() => (this.successMessage = ''), 3000);
       },
-      error: () => {
-        this.errorMessage = 'Failed to update blog status';
+      error: (err) => {
+        console.error('Error updating blog status:', err);
+        this.errorMessage = err.error.message || 'Failed to update blog status';
         setTimeout(() => (this.errorMessage = ''), 3000);
       }
     });
@@ -115,8 +117,9 @@ export class AdminComponent {
         this.loadBlogs();
         setTimeout(() => (this.successMessage = ''), 3000);
       },
-      error: () => {
-        this.errorMessage = 'Failed to delete blog';
+      error: (err) => {
+        console.error('Error deleting blog:', err);
+        this.errorMessage = err.error.message || 'Failed to delete blog';
         setTimeout(() => (this.errorMessage = ''), 3000);
       }
     });

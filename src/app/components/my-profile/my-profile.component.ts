@@ -70,7 +70,7 @@ export class MyProfileComponent implements OnInit {
           this.authService.logout();
         }
         this.loading = false;
-        this.errorMessage = err.message || 'Please try again.';
+        this.errorMessage = err.error.message || 'Please try again.';
       }
     });
   }
@@ -94,7 +94,7 @@ export class MyProfileComponent implements OnInit {
 
     this.userService.getLikedBlogs().subscribe({
       next: (res: any) => {
-        
+
         if (res.success && res.data.blogs) {
           this.likedBlogs = res.data.blogs;
         }

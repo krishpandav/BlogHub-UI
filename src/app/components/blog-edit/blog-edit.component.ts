@@ -110,7 +110,7 @@ export class BlogEditComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading blog:', error);
-        this.showError('Error loading blog: ' + error.message);
+        this.showError(error.error.message);
         this.isLoading = false;
 
         if (error.status === 401) {
@@ -153,13 +153,13 @@ export class BlogEditComponent implements OnInit {
           this.showSuccess(status === 'draft' ? 'Draft saved successfully' : 'Blog updated successfully');
           setTimeout(() => this.router.navigate(['/profile']), 2000);
         } else {
-          this.showError('Error saving blog: ' + response.message);
+          this.showError(response.message);
         }
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error saving blog:', error);
-        this.showError('Error saving blog: ' + error.error.message);
+        this.showError(error.error.message);
         this.isLoading = false;
 
         if (error.status === 401) {

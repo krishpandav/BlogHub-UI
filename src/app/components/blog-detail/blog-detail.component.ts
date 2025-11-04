@@ -48,7 +48,8 @@ export class BlogDetailComponent {
             }
           },
           error: (err: any) => {
-            this.errorMessage = 'Error loading blog: ' + err.message;
+            console.error('Error loading blog:', err);
+            this.errorMessage = err.error.message || err.message || 'Error loading blog';
           }
         });
 

@@ -48,16 +48,16 @@ export class LoginComponent {
         next: (res) => {
           this.loading = false;
           if (res.success) {
-            this.successMessage = res.message || 'Registration successful!';
+            this.successMessage = res.message || 'User login successful!';
             setTimeout(() => this.router.navigate(['/home']), 2000);
           } else {
-            this.errorMessage = res.message || 'Registration failed. Please try again.';
+            this.errorMessage = res.message || 'User login failed. Please try again.';
           }
           console.log('Registered successfully:', res)
         },
         error: (err) => {
           this.loading = false;
-          console.error('Registration failed:', err)
+          console.error('User login failed:', err)
           this.errorMessage = err?.error?.message || 'Login failed. Please try again.';
         }
       });

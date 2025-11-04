@@ -120,16 +120,16 @@ export class CreateBlogComponent implements OnInit {
         if (response.success) {
           this.showSuccess(status === 'draft' ? 'Draft saved successfully' : 'Blog published successfully');
           setTimeout(() => {
-            this.router.navigate(['/my-profile']);
+            this.router.navigate(['/profile']);
           }, 2000);
         } else {
-          this.showError('Error saving blog: ' + response.message);
+          this.showError(response.message);
         }
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error saving blog:', error);
-        this.showError('Error saving blog: ' + error.message);
+        this.showError(error.error.message);
         this.isLoading = false;
 
         if (error.status === 401) {

@@ -70,9 +70,9 @@ export class BlogListComponent implements OnInit {
           error: (err) => {
             // If server returns 401, logout user
             if (err.status === 401) {
-              return  this.auth.logout();
+              return this.auth.logout();
             }
-            this.errorMessage = err.message;
+            this.errorMessage = err.error.message;
             this.loading = false;
           }
         });
@@ -91,9 +91,9 @@ export class BlogListComponent implements OnInit {
           error: (err) => {
             // If server returns 401, logout user
             if (err.status === 401) {
-              return  this.auth.logout();
+              return this.auth.logout();
             }
-            this.errorMessage = err.message;
+            this.errorMessage = err.error.message;
             this.loading = false;
           }
         });
@@ -108,7 +108,7 @@ export class BlogListComponent implements OnInit {
       error: (err) => {
         // If server returns 401, logout user
         if (err.status === 401) {
-          return  this.auth.logout();
+          return this.auth.logout();
         }
         console.error('Error loading popular posts:', err)
       }
@@ -123,7 +123,7 @@ export class BlogListComponent implements OnInit {
       error: (err) => {
         // If server returns 401, logout user
         if (err.status === 401) {
-          return  this.auth.logout();
+          return this.auth.logout();
         }
         console.error('Error loading categories:', err)
       }

@@ -71,7 +71,7 @@ export class PopularBlogsComponent implements OnInit {
           this.loading = false;
         },
         error: (err) => {
-          this.errorMessage = 'Error loading blogs: ' + err.message;
+          this.errorMessage = err.error.message;
           this.loading = false;
         }
       });
