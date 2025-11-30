@@ -134,6 +134,14 @@
                         <app-blog-card [blog]="blog" [isEdit]="true"></app-blog-card>
                         }
                     </div>
+
+                @if (blogs.length < 1) { 
+                    <div class="text-center py-5">
+                    <h5>You haven't written any blogs yet</h5>
+                    <p class="text-muted">Start sharing your thoughts with the community!</p>
+                    <a [routerLink]="['/create-blog']" class="btn btn-primary-custom">Write Your First Blog</a>
+                    </div>
+                }
                 </div>
             </div>
 
@@ -144,10 +152,17 @@
                         <app-blog-card [blog]="blog"></app-blog-card>
                         }
                     </div>
+                @if (likedBlogs.length < 1) { 
+                    <div class="text-center py-5">
+                            <h5>You haven't liked any blogs yet</h5>
+                            <p class="text-muted">Discover interesting blogs and show your appreciation!</p>
+                            <a [routerLink]="['/home']" class="btn btn-primary-custom">Explore Blogs</a>
+                    </div>
+                }
                 </div>
             </div>
 
-            }
+        }
         </div>
     </div>
 </div>

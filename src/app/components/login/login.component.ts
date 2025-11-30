@@ -49,7 +49,7 @@ export class LoginComponent {
           this.loading = false;
           if (res.success) {
             this.successMessage = res.message || 'User login successful!';
-            setTimeout(() => this.router.navigate(['/home']), 2000);
+            setTimeout(() => this.router.navigate(['/home']), 1000);
           } else {
             this.errorMessage = res.message || 'User login failed. Please try again.';
           }

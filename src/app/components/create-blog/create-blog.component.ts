@@ -5,7 +5,7 @@ import { FooterComponent } from '../../common/components/footer/footer.component
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BlogService } from '../../common/service/blog.service';
 import { AuthService } from '../../common/service/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Modal } from 'bootstrap';
 
 interface Category {
@@ -26,7 +26,7 @@ interface BlogData {
 
 @Component({
   selector: 'app-create-blog',
-  imports: [CommonModule, HeaderComponent, FooterComponent, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent, ReactiveFormsModule],
   templateUrl: './create-blog.component.html',
   styleUrl: './create-blog.component.scss'
 })

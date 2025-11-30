@@ -64,15 +64,16 @@
 
               <div class="mb-3">
                 <label for="blogTags" class="form-label">Tags</label>
-                <input type="text" class="form-control" id="blogTags" formControlName="tags" placeholder="tag1, tag2, tag3">
+                <input type="text" class="form-control" id="blogTags" formControlName="tags"
+                  placeholder="tag1, tag2, tag3">
                 <div class="form-text">Separate tags with commas (optional)</div>
               </div>
 
               <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-secondary" (click)="previewBlog()">Preview</button>
+                <a type="button" class="btn btn-outline-secondary" [routerLink]="['/profile']">Cancel</a>
                 <div>
                   <button type="button" class="btn btn-secondary me-2" (click)="saveBlog('draft')">Save Draft</button>
-                  <button type="submit" class="btn btn-primary-custom" [disabled]="blogForm.invalid">Update</button>
+                  <button type="submit" class="btn btn-primary-custom" [disabled]="blogForm.invalid">Publish</button>
                 </div>
               </div>
             </form>
@@ -101,7 +102,8 @@
             <h5 class="card-title mb-0">Blog Status</h5>
           </div>
           <div class="card-body">
-            <p class="mb-0">Your blog will be saved as a draft until you choose to publish it. Drafts are only visible to you.</p>
+            <p class="mb-0">Your blog will be saved as a draft until you choose to publish it. Drafts are only visible
+              to you.</p>
           </div>
         </div>
       </div>
@@ -120,7 +122,8 @@
           <div *ngIf="previewData">
             <div class="card blog-card">
               <div *ngIf="previewData.image" class="mb-3">
-                <img [src]="previewData.image" [alt]="previewData.title" class="card-img-top" style="height: 200px; object-fit: cover;">
+                <img [src]="previewData.image" [alt]="previewData.title" class="card-img-top"
+                  style="height: 200px; object-fit: cover;">
               </div>
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -130,7 +133,8 @@
                   <span>By {{ previewData.authorName || 'Unknown' }}</span>
                   <span>{{ currentDate }}</span>
                 </div>
-                <p class="blog-excerpt">{{ previewData.content ? (previewData.content | slice:0:150) + '...' : 'No content' }}</p>
+                <p class="blog-excerpt">{{ previewData.content ? (previewData.content | slice:0:150) + '...' : 'No
+                  content' }}</p>
                 <div class="blog-content pt-2 border-top" [innerHTML]="previewData.content"></div>
               </div>
               <div *ngIf="previewData.tags && previewData.tags.length > 0" class="mb-4" id="tagsContainer">

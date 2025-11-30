@@ -39,7 +39,6 @@ export class BlogListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const search = params['searchtext'] || '';
       const page = +params['page'] || 1;
-      debugger
       this.searchtext = search;
       this.currentPage = page;
       this.loadBlogs(this.currentPage);
@@ -78,7 +77,6 @@ export class BlogListComponent implements OnInit {
           }
         });
     } else {
-      debugger
       this.blogService.getBlogs(page, this.searchtext || undefined)
         .subscribe({
           next: (res: any) => {
